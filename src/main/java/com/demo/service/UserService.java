@@ -1,6 +1,7 @@
 package com.demo.service;
 
 import com.demo.model.User;
+import com.demo.model.UserRole;
 
 import java.util.List;
 import java.util.Set;
@@ -44,6 +45,8 @@ public interface UserService {
      * @return
      */
     public int delete(Integer id);
+
+    public int addUserRole(UserRole userRole);
 
 
 }
