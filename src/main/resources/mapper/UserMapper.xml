@@ -16,6 +16,7 @@
         <!--</collection>-->
     <!--</resultMap>-->
 
+
     <!--根据用户查询用户名-->
     <select id="findByUsername" resultType="User">
         SELECT
@@ -73,6 +74,20 @@
         DELETE FROM user
         WHERE id = #{id}
     </delete>
+
+    <!--新增角色权限关联-->
+    <insert id="addUserRole" parameterType="UserRole">
+        INSERT INTO
+        user_role
+        (
+        user_id,
+        role_id
+        )
+        VALUES(
+        #{userId},
+        #{roleId}
+        )
+    </insert>
 
 
 
