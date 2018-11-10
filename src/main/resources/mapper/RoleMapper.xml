@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.demo.mapper.RoleMapper">
+
+    <resultMap id="RolePermissionResult" type="RolePermission">
+        <result column="role_id" property="roleId"/>
+        <result column="permission_id" property="permissionId"/>
+    </resultMap>
+
+    <!--查询所有角色信息-->
+    <select id="findAll" resultType="Role">
+        SELECT
+        id,
+        name
+        FROM
+        role
+    </select>
+
+    <!--根据用户名查找角色-->
+    <select id="findUserRole" parameterType="string" resultType="Role">
+        SELECT
+        u.*,
+        r.name
+        FROM
+        role AS r
+        LEFT JOIN user_role AS ur
+        ON
+        r.id = ur.role_id
+        LEFT JOIN USER AS u
+        ON
+        u.id = ur.user_id
+        WHERE
+        u.username = #{username}
+    </select>
+
+    <!--根据角色权限查询角色ID-->
+    <select id="findByRolePermission" resultMap="RolePermissionResult">
+        SELECT
+        role_id,
+        permission_id
+        FROM
+        role_permission
+        WHERE
+        role_id = #{roleId}
+    </select>
+
+    <!--新增角色-->
+    <insert id="addRole" parameterType="Role" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+        role(name)
+        VALUES(#{name})
+    </insert>
+
+    <!--新增角色权限关联-->
+    <insert id="addRolePermission" parameterType="RolePermission">
+        INSERT INTO
+        role_permission
+        (
+        role_id,
+        permission_id
+        )
+        VALUES(
+        #{roleId},
+        #{permissionId}
+        )
+    </insert>
+
+    <!--更新角色-->
+    <update id="updateRole" parameterType="Role" keyColumn="id" useGeneratedKeys="true" keyProperty="id">
+        UPDATE
+        role
+        SET
+        name = #{name}
+        WHERE id = #{id}
+    </update>
+
+    <!--删除角色-->
+    <delete id="deleteRole" parameterType="int">
+        DELETE FROM role
+        WHERE id = #{id}
+    </delete>
+
+    <!--删除角色权限关联-->
+    <delete id="deleteRolePermission" parameterType="int">
+        DELETE FROM role_permission
+        WHERE role_id = #{id}
+    </delete>
+
+
+</mapper>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.demo.mapper.UserMapper">
+
+    <!--<resultMap id="userMap" type="com.demo.model.User">-->
+        <!--<id property="id" column="id"/>-->
+        <!--<result property="cnname" column="cnname"/>-->
+        <!--<result property="username" column="username"/>-->
+        <!--<result property="password" column="password"/>-->
+        <!--<result property="salt" column="salt"/>-->
+        <!--<result property="status" column="status"/>-->
+        <!--<collection property="roles" ofType="com.demo.model.Role">-->
+            <!--<result column="name" property="name"/>-->
+        <!--</collection>-->
+    <!--</resultMap>-->
+
+    <!--根据用户查询用户名-->
+    <select id="findByUsername" resultType="User">
+        SELECT
+        id,
+        username,
+        password,
+        salt,
+        status
+        FROM
+        user
+        WHERE
+        username = #{username}
+    </select>
+
+    <!--查询所有用户-->
+    <select id="findAll" resultType="User">
+        SELECT
+        id,
+        username,
+        password,
+        salt,
+        nickname,
+        status,
+        reg_time
+        FROM
+        user
+    </select>
+
+    <!--新增用户-->
+    <insert id="save" parameterType="User">
+        INSERT INTO user(username, password, salt, nickname, status, reg_time)
+        VALUES(
+        #{username},
+        #{password},
+        #{salt},
+        #{nickname},
+        #{status},
+        #{reg_time}
+        )
+    </insert>
+
+    <!--更新用户-->
+    <update id="update" parameterType="User">
+        UPDATE
+        user
+        SET
+        username = #{username},
+        nickname = #{nickname},
+        status = #{status}
+        WHERE id = #{id}
+    </update>
+
+    <!--删除用户-->
+    <delete id="delete" parameterType="long">
+        DELETE FROM user
+        WHERE id = #{id}
+    </delete>
+
+
+
+
+
+
+
+</mapper>
+
