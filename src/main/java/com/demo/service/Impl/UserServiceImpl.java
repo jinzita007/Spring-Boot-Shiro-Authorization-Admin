@@ -2,6 +2,7 @@ package com.demo.service.Impl;
 
 import com.demo.model.User;
 import com.demo.mapper.UserMapper;
+import com.demo.model.UserRole;
 import com.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public int delete(Integer id) {
         return userMapper.delete(id);
+    }
+
+    @Override
+    public int addUserRole(UserRole userRole) {
+        return userMapper.addUserRole(userRole);
     }
 
 }
