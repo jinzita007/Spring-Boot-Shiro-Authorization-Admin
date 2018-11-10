@@ -48,4 +48,11 @@ public interface UserMapper {
      */
     int addUserRole(UserRole userRole);
 
+    /**
+     * 根据用户角色查找用户ID
+     * @param userId
+     * @return
+     */
+    UserRole findUserRoleByUserId(Integer userId);
+
 }
