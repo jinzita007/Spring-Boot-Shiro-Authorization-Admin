@@ -41,7 +41,7 @@
                     <td th:text="${#dates.format(user.reg_time,'yyyy-MM-dd HH:mm:ss')}">创建时间</td>
                     <td>
                         <div>
-                            <span data-toggle="tooltip" title="给用户分配角色" class="btn btn-xs btn-primary" onclick="addUserRole();"><i class="fa fa-user-md"></i> 分配角色</span>
+                            <span data-toggle="tooltip" title="给用户分配角色" class="btn btn-xs btn-primary" th:onclick="'javascript:addUserRole('+${user.id}+');'"><i class="fa fa-user-md"></i> 分配角色</span>
                             <span data-toggle="tooltip" title="编辑用户信息" class="btn btn-xs btn-info" th:onclick="'javascript:editUser(\''+${user.id}+'\',\''+${user.username}+'\',\''+${user.nickname}+'\');'"
                             ><i class="fa fa-edit"></i> 编辑</span>
                             <span data-toggle="tooltip" title="删除用户" class="btn btn-xs btn-danger" ><i class="fa fa-trash-o"></i> 删除</span>
@@ -126,66 +126,37 @@
 
 
 
-<!-- 新增或修改的模态框 -->
-<!--<div class="modal fade" id="userModal" tabindex="-1" role="dialog"-->
-     <!--aria-labelledby="myModalLabel" aria-hidden="true">-->
-    <!--<div class="modal-dialog">-->
-        <!--<div class="modal-content">-->
-            <!--<div class="modal-header">-->
-                <!--<button type="button" class="close" data-dismiss="modal"-->
-                        <!--aria-hidden="true">&times;</button>-->
-                <!--<h4 class="modal-title text-center" id="usermodelHead">添加用户</h4>-->
-            <!--</div>-->
-            <!--<div class="modal-body">-->
-                <!--<form id="userForm"  role="form">-->
-                    <!--&lt;!&ndash;<input type="hidden" name="url" value=""/>&ndash;&gt;-->
-                    <!--<input type="hidden" name="user_id" value=""/>-->
-                    <!--&lt;!&ndash;<input type="hidden" name="pics" value=""/>&ndash;&gt;-->
-                    <!--&lt;!&ndash;<input type="hidden" name="oldpath" value=""/>&ndash;&gt;-->
-                    <!--&lt;!&ndash;<div class="form-group" data-toggle="tooltip" title="如果不修改则不需要选择文件">&ndash;&gt;-->
-                        <!--&lt;!&ndash;<label for="imgfile" class="col-sm-2 control-label">上传头像</label>&ndash;&gt;-->
-                        <!--&lt;!&ndash;<div class="col-sm-10">&ndash;&gt;-->
-                            <!--&lt;!&ndash;<a href="javascript:void(0)"><input type="file" class="form-control file" name="imgfile" value="" id="imgfile" placeholder="请选择文件"></a>&ndash;&gt;-->
-                        <!--&lt;!&ndash;</div>&ndash;&gt;-->
-                    <!--&lt;!&ndash;</div>&ndash;&gt;-->
+<!-- 分配角色的模态框 -->
+<div class="modal fade" id="userRoleModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="addModalLabel">
+                    分配角色信息
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form id="userRoleForm" role="form" class="form-horizontal">
+                    <input type="text" id="user_id" name="userId" hidden>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">分配角色</label>
+                        <div class="col-sm-9">
+                            <select id="selectbox2" name="roleId"></select>
+                        </div>
+                    </div>
 
-                    <!--&lt;!&ndash;<div class="form-group">&ndash;&gt;-->
-                        <!--&lt;!&ndash;<label for="imgfile" class="col-sm-2 control-label"></label>&ndash;&gt;-->
-                        <!--&lt;!&ndash;<div class="col-sm-10">&ndash;&gt;-->
-                            <!--&lt;!&ndash;<div><img src="" data-toggle="tooltip" title="当前头像或更新后的头像" id="showImg" style="width: 50px;"></div>&ndash;&gt;-->
-                        <!--&lt;!&ndash;</div>&ndash;&gt;-->
-                    <!--&lt;!&ndash;</div>&ndash;&gt;-->
-
-                    <!--<div class="form-group">-->
-                        <!--<label for="username" class="col-sm-2 control-label">用户名称</label>-->
-                        <!--<div class="col-sm-10">-->
-                            <!--<input type="text" class="form-control" name="username" value="" id="username" placeholder="请输入用户名">-->
-                        <!--</div>-->
-                    <!--</div>-->
-
-                    <!--<div class="form-group">-->
-                        <!--<label for="nickname" class="col-sm-2 control-label">用户昵称</label>-->
-                        <!--<div class="col-sm-10">-->
-                            <!--<input type="text" class="form-control" name="nickname" value="" id="nickname" placeholder="请输入昵称">-->
-                        <!--</div>-->
-                    <!--</div>-->
-
-                    <!--<div class="form-group">-->
-                        <!--<label for="password" class="col-sm-2 control-label">用户密码</label>-->
-                        <!--<div class="col-sm-10">-->
-                            <!--<input type="password" class="form-control" name="password" value="" id="password" placeholder="请输入密码">-->
-                        <!--</div>-->
-                    <!--</div>-->
-
-                <!--</form>-->
-            <!--</div>-->
-            <!--<div class="modal-footer">-->
-                <!--<button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>-->
-                <!--<button type="submit" onclick="saveUser();" class="btn btn-success"  id="imgSubmit" >确认</button>-->
-            <!--</div>-->
-        <!--</div>-->
-    <!--</div>-->
-<!--</div>-->
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="input" class="btn btn-primary" onclick="saveUserRole();">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 <!-- jQuery 2.2.3 -->
@@ -207,6 +178,7 @@
 <script type="text/javascript" th:inline="javascript">
     $(document).ready(function(){
         Validator();
+
     });
 
     var form = $("#userForm");
@@ -324,6 +296,61 @@
             });
         }
 
+    }
+
+    //分配角色弹窗
+    function addUserRole(id) {
+        $('#userRoleModal').modal('show');
+        $('input[name="userId"]').val(id);
+        console.log(id);
+        getUserRole();
+
+    }
+
+    function getUserRole() {
+        var str = "";
+        $.ajax({
+            type:"GET",
+            url: "http://localhost:8080/sys/role/role_list",
+            dataType: "json",
+            success: function (data) {
+                console.log(data);
+                str+="<option value=''>无</option>";
+                $.each(data.data,function(i,item){
+                    str += '<option value="'+item.id+'">'
+                        + item.name
+                        + '</option>';
+
+                })
+                $("#selectbox2").html(str);
+            }
+        })
+    }
+    
+    function saveUserRole() {
+        //获取选中的项
+        var options=$("#selectbox2 option:selected");
+        var roleId = options.val();
+        var userId = $('input[name="userId"]').val();
+        console.log("---用户ID---"+userId);
+        console.log("---角色ID---"+roleId);
+
+        $.ajax({
+            type:"POST",
+            url: "saveUserRole",
+            dataType: "json",
+            data: {
+                userId: userId,
+                roleId: roleId
+            },
+            success: function (data) {
+                console.log(data);
+                if(data.code == 200) {
+                    layer.msg("分配角色成功");
+
+                }
+            }
+        })
     }
 
 
