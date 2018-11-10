@@ -88,6 +88,15 @@
         #{roleId}
         )
     </insert>
+    
+    <select id="findUserRoleByUserId" resultType="UserRole">
+        SELECT
+        id,
+        user_id,
+        role_id
+        WHERE
+        user_id = #{userId}
+    </select>
 
 
 
