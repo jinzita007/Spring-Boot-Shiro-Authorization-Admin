@@ -2,6 +2,7 @@ package com.demo.mapper;
 
 
 import com.demo.model.User;
+import com.demo.model.UserRole;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -39,5 +40,12 @@ public interface UserMapper {
      * @param id
      */
     int delete(Integer id);
+
+    /**
+     * 新增用户角色关联
+     * @param userRole
+     * @return
+     */
+    int addUserRole(UserRole userRole);
 
 }
