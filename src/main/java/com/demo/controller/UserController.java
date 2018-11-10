@@ -1,6 +1,7 @@
 package com.demo.controller;
 
 import com.demo.model.User;
+import com.demo.model.UserRole;
 import com.demo.service.UserService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
@@ -107,5 +108,19 @@ public class UserController {
         return map;
     }
 
+
+    @RequestMapping(value="saveUserRole",method =RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> saveUserRole(UserRole userRole) {
+        Map<String, Object> map = new LinkedHashMap<String, Object>();
+        try {
+//            userService.saveUserRole(userRole);
+            map.put("code", 200);
+            map.put("data", userRole);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
 
 }
