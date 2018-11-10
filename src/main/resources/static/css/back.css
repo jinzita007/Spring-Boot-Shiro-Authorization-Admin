@@ -1,0 +1,10 @@
+body{
+    background: #f1f4f6;
+    font-size: 13px;
+}
+.skin-green .sidebar a {
+    color: #b8c7ce;
+}
+.sidebar-menu .treeview-menu>li>a {
+    font-size: 12px;
+}

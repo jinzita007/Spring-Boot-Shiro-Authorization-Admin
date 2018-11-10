@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="include/head :: css_head"></head>
+<body>
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        <small>系统管理 > 用户管理</small>
+    </h1>
+
+</section>
+
+
+<!-- Main content -->
+<section class="content">
+    <div class="box">
+        <div class="box-header">
+            <h3 class="box-title">用户列表</h3>
+            <br><br>
+            <button class="btn btn-success btn-sm" id="addUser" onclick="addUser()"><i class="fa fa-plus"></i> &nbsp;&nbsp;添加用户</button>
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body">
+            <table id="roleList" class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th>用户ID</th>
+                    <th>用户名称</th>
+                    <th>用户昵称</th>
+                    <th>创建时间</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="user : ${list}">
+                    <!--<td th:text="${stat.count}">1</td>-->
+                    <td th:text="${user.id}">用户ID</td>
+                    <!--<td><img height="30px" style="border-radius: 15px;" th:src="${user.pic_path}" src="/images/logo.png"></img></td>-->
+                    <td th:text="${user.username}">用户名称</td>
+                    <td th:text="${user.nickname}">用户昵称</td>
+                    <td th:text="${#dates.format(user.reg_time,'yyyy-MM-dd HH:mm:ss')}">创建时间</td>
+                    <td>
+                        <div>
+                            <span data-toggle="tooltip" title="给用户分配角色" class="btn btn-xs btn-primary" onclick="addUserRole();"><i class="fa fa-user-md"></i> 分配角色</span>
+                            <span data-toggle="tooltip" title="编辑用户信息" class="btn btn-xs btn-info" th:onclick="'javascript:editUser(\''+${user.id}+'\',\''+${user.username}+'\',\''+${user.nickname}+'\');'"
+                            ><i class="fa fa-edit"></i> 编辑</span>
+                            <span data-toggle="tooltip" title="删除用户" class="btn btn-xs btn-danger" ><i class="fa fa-trash-o"></i> 删除</span>
+                            <!--<span data-toggle="tooltip" title="权限不够" ><i class="fa fa-lock"></i> 无权限</span>-->
+                        </div>
+                        <!--<div th:if="${user.user_id == 1 && meid != '1'}">-->
+                            <!--<span><i class="fa fa-lock"></i></span>-->
+                        <!--</div>-->
+                    </td>
+                </tr>
+                <!--<tr th:unless="${QX.query == '1'}" >-->
+                    <!--<td colspan="7" align="center">-->
+                        <!--<h2>此用户无权限查看该页面</h2>-->
+                    <!--</td>-->
+                <!--</tr>-->
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</section>
+
+<!--模态框-->
+
+    <div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="updateModalLabel">
+                        用户信息
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <form id="userForm" role="form" class="form-horizontal">
+                        <!--userid为隐藏的input，便于update时的传值-->
+                        <input type="text" id="userID" name="userID" hidden>
+                        <div class="form-group">
+                            <label for="username" class="col-sm-3 control-label">用户名</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="username" name="username" placeholder="请输入用户名">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="nickname" class="col-sm-3 control-label">昵称</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="nickname" name="nickname" placeholder="请输入昵称">
+                            </div>
+                        </div>
+                        <div class="form-group" id="form-group-password">
+                            <label for="password" class="col-sm-3 control-label">密码</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="password" name="password" placeholder="请输入密码">
+                            </div>
+                        </div>
+                        <!--<div class="form-group">-->
+                            <!--<label for="phone" class="col-sm-3 control-label">手机号</label>-->
+                            <!--<div class="col-sm-9">-->
+                                <!--<input type="text" class="form-control" id="phone" name="phone" placeholder="请输入手机号">-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class="form-group">-->
+                            <!--<label for="email" class="col-sm-3 control-label">邮箱</label>-->
+                            <!--<div class="col-sm-9">-->
+                                <!--<input type="email" class="form-control" id="email" name="email" placeholder="请输入邮箱地址">-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <!--type为submit时，会自动调用该表单的验证，但是不会调用自己定义的动态的username的验证，
+                    所以把按钮类型改为input，再手动调用封装好的验证函数-->
+                    <button type="input" class="btn btn-primary" onclick="saveUser();">提交</button>
+                    <span id="tip"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<!-- 新增或修改的模态框 -->
+<!--<div class="modal fade" id="userModal" tabindex="-1" role="dialog"-->
+     <!--aria-labelledby="myModalLabel" aria-hidden="true">-->
+    <!--<div class="modal-dialog">-->
+        <!--<div class="modal-content">-->
+            <!--<div class="modal-header">-->
+                <!--<button type="button" class="close" data-dismiss="modal"-->
+                        <!--aria-hidden="true">&times;</button>-->
+                <!--<h4 class="modal-title text-center" id="usermodelHead">添加用户</h4>-->
+            <!--</div>-->
+            <!--<div class="modal-body">-->
+                <!--<form id="userForm"  role="form">-->
+                    <!--&lt;!&ndash;<input type="hidden" name="url" value=""/>&ndash;&gt;-->
+                    <!--<input type="hidden" name="user_id" value=""/>-->
+                    <!--&lt;!&ndash;<input type="hidden" name="pics" value=""/>&ndash;&gt;-->
+                    <!--&lt;!&ndash;<input type="hidden" name="oldpath" value=""/>&ndash;&gt;-->
+                    <!--&lt;!&ndash;<div class="form-group" data-toggle="tooltip" title="如果不修改则不需要选择文件">&ndash;&gt;-->
+                        <!--&lt;!&ndash;<label for="imgfile" class="col-sm-2 control-label">上传头像</label>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<div class="col-sm-10">&ndash;&gt;-->
+                            <!--&lt;!&ndash;<a href="javascript:void(0)"><input type="file" class="form-control file" name="imgfile" value="" id="imgfile" placeholder="请选择文件"></a>&ndash;&gt;-->
+                        <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                    <!--&lt;!&ndash;</div>&ndash;&gt;-->
+
+                    <!--&lt;!&ndash;<div class="form-group">&ndash;&gt;-->
+                        <!--&lt;!&ndash;<label for="imgfile" class="col-sm-2 control-label"></label>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<div class="col-sm-10">&ndash;&gt;-->
+                            <!--&lt;!&ndash;<div><img src="" data-toggle="tooltip" title="当前头像或更新后的头像" id="showImg" style="width: 50px;"></div>&ndash;&gt;-->
+                        <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                    <!--&lt;!&ndash;</div>&ndash;&gt;-->
+
+                    <!--<div class="form-group">-->
+                        <!--<label for="username" class="col-sm-2 control-label">用户名称</label>-->
+                        <!--<div class="col-sm-10">-->
+                            <!--<input type="text" class="form-control" name="username" value="" id="username" placeholder="请输入用户名">-->
+                        <!--</div>-->
+                    <!--</div>-->
+
+                    <!--<div class="form-group">-->
+                        <!--<label for="nickname" class="col-sm-2 control-label">用户昵称</label>-->
+                        <!--<div class="col-sm-10">-->
+                            <!--<input type="text" class="form-control" name="nickname" value="" id="nickname" placeholder="请输入昵称">-->
+                        <!--</div>-->
+                    <!--</div>-->
+
+                    <!--<div class="form-group">-->
+                        <!--<label for="password" class="col-sm-2 control-label">用户密码</label>-->
+                        <!--<div class="col-sm-10">-->
+                            <!--<input type="password" class="form-control" name="password" value="" id="password" placeholder="请输入密码">-->
+                        <!--</div>-->
+                    <!--</div>-->
+
+                <!--</form>-->
+            <!--</div>-->
+            <!--<div class="modal-footer">-->
+                <!--<button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>-->
+                <!--<button type="submit" onclick="saveUser();" class="btn btn-success"  id="imgSubmit" >确认</button>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
+
+
+<!-- jQuery 2.2.3 -->
+<!--<script th:src="@{/adminlite/plugins/jQuery/jquery-2.2.3.min.js}"></script>-->
+<script src="https://cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
+<!-- Bootstrap 3.3.6 -->
+<script th:src="@{/adminlite/bootstrap/js/bootstrap.min.js}"></script>
+<script src="https://cdn.bootcss.com/bootstrap-validator/0.5.3/js/bootstrapValidator.js"></script>
+
+<script th:src="@{/adminlite/plugins/datatables/dataTables.bootstrap.js}"></script>
+<script th:src="@{/adminlite/plugins/datatables/jquery.dataTables.js}"></script>
+<!-- AdminLTE App -->
+<script th:src="@{/adminlite/dist/js/app.min.js}"></script>
+<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+<script th:src="@{/adminlite/dist/js/pages/dashboard.js}"></script>
+<!-- AdminLTE for demo purposes -->
+<script th:src="@{/adminlite/dist/js/demo.js}"></script>
+<script src="https://cdn.bootcss.com/layer/2.3/layer.js"></script>
+<script type="text/javascript" th:inline="javascript">
+    $(document).ready(function(){
+        Validator();
+    });
+
+    var form = $("#userForm");
+
+    //新增用户
+    function addUser(){
+        showModelData("添加用户");
+        $("#userModal").modal("show");
+        $("#form-group-password").show();
+        $("#userForm").val(" ");
+    }
+
+    //编辑用户
+    function editUser(userId,username,nickname) {
+        showModelData("编辑用户",userId,username,nickname);
+        $("#form-group-password").hide();
+        $("#userModal").modal("show");
+
+    }
+
+    function showModelData(title,userId,username,nickname) {
+        $("#userModal #usermodelHead").text(title);
+        $("input[name='userID']").val(userId);
+        $("input[name='username']").val(username);
+        $("input[name='nickname']").val(nickname);
+    }
+
+
+    //验证数据
+    function Validator() {
+        form.bootstrapValidator({
+            message: '输入值不合法',
+            feedbackIcons: {
+                valid: 'glyphicon glyphicon-ok',
+                invalid: 'glyphicon glyphicon-remove',
+                validating: 'glyphicon glyphicon-refresh'
+            },
+            fields: {
+                username: {
+                    message: '用户名不合法',
+                    validators: {
+                        notEmpty: {
+                            message: '用户名不能为空'
+                        },
+                        stringLength: {
+                            min: 3,
+                            max: 30,
+                            message: '请输入3到30个字符'
+                        },
+                        regexp: {
+                            regexp: /^[a-zA-Z0-9_\. \u4e00-\u9fa5 ]+$/,
+                            message: '用户名只能由字母、数字、点、下划线和汉字组成 '
+                        }
+                    }
+                }
+                , nickname: {
+                    validators: {
+                        notEmpty: {
+                            message: '昵称不能为空'
+                        }
+                    }
+                }, phone: {
+                    validators: {
+                        notEmpty: {
+                            message: '手机号不能为空'
+                        },
+                        regexp: {
+                            regexp: "^([0-9]{11})?$",
+                            message: '手机号码格式错误'
+                        }
+                    }
+                }, password: {
+                    validators: {
+                        notEmpty: {
+                            message: '密码不能为空'
+                        }, stringLength: {
+                            min: 3,
+                            max: 20,
+                            message: '请输入3到30个字符'
+                        }
+                    }
+                }
+            }
+        });
+
+    }
+
+
+
+    //新增用户--确认按钮
+    function saveUser() {
+
+        //进行表单验证
+        var bv = form.data('bootstrapValidator');
+        bv.validate();
+        if (bv.isValid()) {
+            console.log(form.serialize());
+            $.ajax({
+                cache: true,
+                type: "POST",
+                url:"add",
+                data:form.serialize(),
+                async: false,
+                success: function(data) {
+                    if(data.code = 200){
+                        layer.msg('保存成功');
+                        // table.ajax.reload();
+
+                        $('#userModal').modal('hide');
+                    } else{
+                        layer.msg('保存失败');
+                        $('#userModal').modal('hide');
+                    }
+                }
+            });
+        }
+
+    }
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="include/head :: css_head"></head>
+<body>
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        <small>系统管理 > 角色管理</small>
+    </h1>
+
+</section>
+
+
+<!-- Main content -->
+<section class="content">
+    <div class="box">
+        <div class="box-header">
+            <h3 class="box-title">角色列表</h3>
+            <br><br>
+            <button class="btn btn-success btn-sm" id="addRole" onclick="addRole();"><i class="fa fa-plus"></i> &nbsp;&nbsp;添加角色</button>
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body">
+            <table id="roleList" class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th>角色ID</th>
+                    <th>角色名称</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="role : ${list}">
+                    <td th:text="${role.id}"></td>
+                    <td th:text="${role.name}"></td>
+
+                    <td>
+                        <div>
+                            <span data-toggle="tooltip" title="编辑角色" class="btn btn-xs btn-info" th:onclick="'javascript:editRole(\''+${role.id}+'\',\''+${role.name}+'\');'"><i class="fa fa-edit"></i> 编辑</span>
+                            <span data-toggle="tooltip" title="删除角色" class="btn btn-xs btn-danger" th:onclick="'javascript:deleteRole(\''+${role.id}+'\');'"><i class="fa fa-trash-o"></i> 删除</span>
+                        </div>
+
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</section>
+
+<!--新增模态框-->
+<div class="modal fade" id="roleModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="updateModalLabel">
+                    角色信息
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form id="roleForm" role="form" class="form-horizontal">
+
+                    <div class="form-group">
+                        <label for="name" class="col-sm-3 control-label">角色名</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="name" name="name" placeholder="请输入角色名">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">菜单权限</label>
+                        <div class="col-sm-9">
+                            <ul id="treeDemo" class="ztree"></ul>
+                            <input type="hidden" name="permissionIds" value="" />
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+
+                <button type="input" class="btn btn-primary" onclick="saveRole();">提交</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--编辑模态框-->
+<div class="modal fade" id="roleEditModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel2" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="updateModalLabel2">
+                    角色信息
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form id="edit-role-form" role="form" class="form-horizontal">
+                    <!--userid为隐藏的input，便于update时的传值-->
+                    <input type="text" id="roleId" name="roleId" hidden>
+                    <div class="form-group">
+                        <label for="name" class="col-sm-3 control-label">角色名</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="Rolename" name="name" placeholder="请输入角色名">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">菜单权限</label>
+                        <div class="col-sm-9">
+                            <ul id="treeDemo2" class="ztree"></ul>
+                            <input type="hidden" name="permissionIds" value="" />
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="input" class="btn btn-primary" onclick="updateRole();">提交</button>
+                <span id="tip"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery 2.2.3 -->
+<script src="https://cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
+<!-- Bootstrap 3.3.6 -->
+<script th:src="@{/adminlite/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{/adminlite/plugins/datatables/dataTables.bootstrap.js}"></script>
+<script th:src="@{/adminlite/plugins/datatables/jquery.dataTables.js}"></script>
+<!-- AdminLTE App -->
+<script th:src="@{/adminlite/dist/js/app.min.js}"></script>
+<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+<script th:src="@{/adminlite/dist/js/pages/dashboard.js}"></script>
+<!-- AdminLTE for demo purposes -->
+<script th:src="@{/adminlite/dist/js/demo.js}"></script>
+<script th:src="@{/zTree_v3/js/jquery.ztree.all.min.js}"></script>
+<script th:src="@{/js/layer.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+    var setting = {
+        check: {
+            enable: true,
+            chkboxType: {
+                "Y": "",
+                "N": ""
+            }
+        },
+        data: {
+            simpleData: {
+                enable: true,
+                idKey: "id", // id编号命名
+                pIdKey: "pid", // 父id编号命名
+                rootPId: 0
+            }
+        }
+    };
+
+    function getList() {
+        $.ajax({
+            url: "perm_list",
+            type: "get",
+            async: false,
+            dataType: "json",
+            success: function (data) {
+                console.log(data);
+                $.fn.zTree.init($("#treeDemo"), setting, data.data);
+                var tree = $.fn.zTree.init($("#treeDemo2"), setting, data.data);
+                tree.expandAll(tree); //默认是展开的
+            },
+            error: function () {
+                console.log("加载异常！")
+            }
+        });
+    }
+
+    function getRolePerm(roleId) {
+        //清除树数据
+        var treeObj = $.fn.zTree.getZTreeObj("treeDemo2");
+        treeObj.checkAllNodes(false);
+        console.log(roleId);
+        $.ajax({
+            url: "roleperm/" + roleId,
+            type: "get",
+            async: false,
+            dataType: "json",
+            success: function (res) {
+                for (var i = 0; i < res.rolePermissionList.length; i++) {
+                    // console.log(res.rolePermissionList[i].permissionId);
+                    zTree = $.fn.zTree.getZTreeObj("treeDemo2");
+                    zTree.checkNode(zTree.getNodeByParam("id", res.rolePermissionList[i].permissionId),
+                        true); //根据id在ztree的复选框中实现自动勾选
+                }
+            },
+            error: function () {
+                console.log("加载异常！")
+            }
+        });
+    }
+
+    //新增角色 -- 提交保存
+    function saveRole() {
+        // 获取ztree对象
+        var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+        // 获取当前tree对象选中的节点数组
+        var nodes = treeObj.getCheckedNodes("true");
+        var array = new Array();
+        for (var i = 0; i < nodes.length; i++) {
+            array.push(nodes[i].id);
+        }
+        var ids = array.join(",");
+        $("input[name=permissionIds]").val(ids);
+        data = {
+            name: $("input[name='name']").val(),
+            permissionIds: $("input[name=permissionIds]").val()
+        }
+        console.log(data);
+        $.ajax({
+            url: "add",
+            type: "post",
+            async: false,
+            data: data,
+            dataType: "json",
+            success: function (data) {
+                console.log(data);
+                $("#roleModal").modal("hide");
+            },
+            error: function () {
+                console.log("异常！")
+            }
+        })
+        return false;
+    }
+
+    //编辑角色 -- 提交保存
+    function updateRole() {
+        // 获取ztree对象
+        var treeObj = $.fn.zTree.getZTreeObj("treeDemo2");
+        // 获取当前tree对象选中的节点数组
+        var nodes = treeObj.getCheckedNodes("true");
+        var array = new Array();
+        for (var i = 0; i < nodes.length; i++) {
+            array.push(nodes[i].id);
+        }
+        var ids = array.join(",");
+        $("#edit-role-form input[name=permissionIds]").val(ids);
+        data = {
+            id: $("#edit-role-form input[name=roleId]").val(),
+            name: $("#edit-role-form input[name=name]").val(),
+            permissionIds: $("#edit-role-form input[name=permissionIds]").val()
+        }
+        console.log(data);
+        $.ajax({
+            url: "update",
+            type: "post",
+            data: data,
+            async: false,
+            dataType: "json",
+            success: function (data) {
+                console.log(data);
+                $("#roleEditModal").modal("hide");
+            },
+            error: function () {
+                console.log("异常！")
+            }
+        })
+        return false;
+
+    }
+
+
+    $(document).ready(function(){
+        getList();
+        getRolePerm();
+    });
+    
+    function editRole(roleId, name) {
+        getRolePerm(roleId);
+        showModelData(roleId,name);
+        $("#roleEditModal").modal("show");
+    }
+    function addRole() {
+        $("#roleModal").modal("show");
+        $("input[name=name]").val("");
+        $("input[name=permissionIds]").val("");
+
+    }
+
+    function showModelData(roleId,name) {
+        $("input[name='roleId']").val(roleId);
+        $("input[name='name']").val(name);
+    }
+
+    //删除按钮
+
+    function deleteRole(id){
+        if (confirm('您确定要删除该角色吗？')) {
+            $.ajax({
+                cache: true,
+                type: "POST",
+                url: 'delete',
+                data: {id: id},
+                async: false,
+                success: function (data) {
+                    if (data == "success") {
+                        layer.msg('删除成功');
+                        // table.ajax.reload();
+                    } else {
+                        layer.msg('删除失败');
+                    }
+                },
+                error: function () {
+                    layer.msg('error');
+                }
+            });
+
+        }
+    }
+</script>
+</body>
+</html>

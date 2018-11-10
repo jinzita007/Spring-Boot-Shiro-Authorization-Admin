@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="include/head :: css_head">
+
+</head>
+<body>
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        <small>系统管理 > 权限管理</small>
+    </h1>
+
+</section>
+
+
+<!-- Main content -->
+<section class="content">
+    <div class="box">
+        <div class="box-header">
+            <h3 class="box-title">权限列表</h3>
+            <br><br>
+            <button class="btn btn-success btn-sm" id="addPerm" onclick="addPerm();"><i class="fa fa-plus"></i> &nbsp;&nbsp;添加权限</button>
+        </div>
+
+        <!-- /.box-header -->
+        <div class="box-body">
+            <table id="table"></table>
+
+
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="permModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="updateModalLabel">
+                    资源信息
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form id="permForm" role="form" class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">父节点</label>
+                        <div class="col-sm-9">
+                            <select id="selectbox" name="pid"></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="name" class="col-sm-3 control-label">资源名</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="name" name="name" placeholder="请输入资源名">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="url" class="col-sm-3 control-label">URL</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="url" name="url" placeholder="请输入url">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="code" class="col-sm-3 control-label">权限代码</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="code" name="code" placeholder="请输入权限代码">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">菜单</label>
+                        <div class="col-sm-9 radio">
+                            <label for="row[ismenu]-normal">
+                                <input id="row[ismenu]-normal" checked="checked" name="ismenu" type="radio" value="1"> 正常</label>
+                            <label for="row[ismenu]-hidden">
+                                <input id="row[ismenu]-hidden" name="ismenu" type="radio" value="0"> 隐藏</label>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">状态</label>
+                    <div class="col-sm-9 radio">
+                        <label for="row[status]-normal">
+                            <input id="row[status]-normal" checked="checked" name="status" type="radio" value="1"> 正常</label>
+                        <label for="row[status]-hidden"><input id="row[status]-hidden" name="status" type="radio" value="0"> 隐藏</label>
+                    </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="input" class="btn btn-primary" onclick="savePerm();">提交</button>
+                <span id="tip"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>-->
+<script src="https://cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
+
+<script src="https://cdn.bootcss.com/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"></script>
+
+<script th:src="@{/adminlite/bootstrap/js/bootstrap.min.js}"></script>
+<!--Bootstrap Switch 开关控件-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-switch/3.3.2/js/bootstrap-switch.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap-table/1.12.1/bootstrap-table.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap-table/1.12.0/extensions/treegrid/bootstrap-table-treegrid.js"></script>
+<script src="https://cdn.bootcss.com/jquery-treegrid/0.2.0/js/jquery.treegrid.min.js"></script>
+<script src="https://cdn.bootcss.com/layer/2.3/layer.js"></script>
+<script th:src="@{/js/perm.js}"></script>
+
+
+<script type="text/javascript">
+
+
+    var $table = $('#table');
+    $(function() {
+        $table.bootstrapTable({
+            type: 'GET',
+            url: 'permlist',
+            height: $(window).height(),
+            striped: true,
+            sidePagination: 'server',
+            //这里是标志id  和 parentIdField有关系
+            idField: 'id',
+            columns: [
+                {
+                    field: 'ck',
+                    checkbox: true
+                },
+                {
+                    field: 'name',
+                    title: '名称'
+                },
+                {
+                    field: 'url',
+                    title: 'URL'
+                },
+                {
+                    field: 'status',
+                    title: '状态',
+                    sortable: true,
+                    align: 'center',
+                    formatter: 'statusFormatter'
+                },
+                {
+                    field: 'ismenu',
+                    title: '菜单',
+                    sortable: true,
+                    align: 'center',
+                    formatter: function(value, row, index){
+                        return menuSwitch(value,row);
+                    }
+                },
+                {
+                    field: 'code',
+                    title: '权限代码'
+                },
+                {
+                    field: 'operate',
+                    title: '操作',
+                    align: 'center',
+                    events: operateEvents,
+                    formatter: 'operateFormatter'
+                }
+            ],
+            //最主要的就是下面  定义哪一列作为展开项  定义父级标志 这里是pid
+            //定义的列一定是要在表格中展现的  换言之就是上方有这个列 不然报错
+            treeShowField: 'name',
+            parentIdField: 'pid',
+            onLoadSuccess: function() {
+                $table.treegrid({
+                    initialState: 'collapsed',
+                    treeColumn: 1,
+                    // expanderExpandedClass: 'glyphicon glyphicon-minus',
+                    // expanderCollapsedClass: 'glyphicon glyphicon-plus',
+                    onChange: function() {
+
+                        $table.bootstrapTable('resetWidth');
+                    }
+                });
+                $("input[name='ismenu']").each(function(){
+                    $(this).bootstrapSwitch({
+                        onText:"开启",
+                        offText:"关闭",
+                        onColor:"success",
+                        offColor:"danger",
+                        size:"small"
+                    });
+
+                    $(this).on('switchChange.bootstrapSwitch', function (event,state) {
+
+                        var id = $(this).attr('idValue');
+                        var state = state==false?0:1;
+
+                        console.log(id);
+                        console.log(state);
+
+                        $.ajax({
+                            url:"changeIsmenu",
+                            data:{
+                                id:id,
+                                ismenu:state
+                            },
+                            async:false,
+                            dataType:"json",
+                            type:"POST",
+                            success:function(result){
+                                if(result.code==200){
+                                    $(this).attr('checked','checked');
+                                    layer.msg("修改成功！");
+                                }
+                            },
+                            error: function () {
+                                layer.msg("error");
+                            }
+                        });
+
+
+                    })
+                })
+
+
+            },
+
+        });
+    });
+
+    //格式化切换菜单按钮
+    function menuSwitch(value,row) {
+        if(value==1){
+            return '<input id="switch-modal" type="checkbox" name="ismenu" value="'+value+'" idValue="'+row.id+'" checked />';
+        }else if(value == 0){
+            return '<input id="switch-modal" type="checkbox" name="ismenu" value="'+value+'" idValue="'+row.id+'" check/>';
+        }
+    }
+
+    // 格式化按钮
+    function operateFormatter(value, row, index) {
+        if(row.pid == 0) {
+            return [
+                '<button type="button" class="PPermOfadd btn-small btn-primary" style="margin-right:15px;" data-toggle="modal" data-target="#add-permchild-form"><i class="fa fa-plus"></i>&nbsp;新增</button>',
+                '<button type="button" class="PermOfedit btn-small btn-primary" style="margin-right:15px;" data-toggle="modal" data-target="#edit-perm-form"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</button>',
+                '<button type="button" class="PermOfdelete btn-small btn-primary" style="margin-right:15px;"><i class="fa fa-trash-o"></i>&nbsp;删除</button>'
+            ].join('');
+        }
+        return [
+            '<button type="button" class="PermOfedit btn-small btn-primary" style="margin-right:15px;" data-toggle="modal" data-target="#edit-perm-form"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</button>',
+            '<button type="button" class="PermOfdelete btn-small btn-primary" style="margin-right:-10%;"><i class="fa fa-trash-o"></i>&nbsp;删除</button>'
+        ].join('');
+
+    }
+    // 格式化类型
+    function typeFormatter(value, row, index) {
+        if (value === 'menu') {
+            return '菜单';
+        }
+        if (value === 'button') {
+            return '按钮';
+        }
+        if (value === 'api') {
+            return '接口';
+        }
+        return '-';
+    }
+
+    // 格式化状态
+    function statusFormatter(value, row, index) {
+        if (value === 1) {
+            return '<span class="label label-success">正常</span>';
+        } else {
+            return '<span class="label label-default">锁定</span>';
+        }
+    }
+
+
+
+
+    //初始化操作按钮的方法
+    window.operateEvents = {
+        //新增子节点
+        'click .PPermOfadd': function (e, value, row, index) {
+            // add(row.pid);
+            showPPerm(row);
+        },
+        //编辑
+        'click .PermOfedit': function (e, value, row, index){
+            showPerme(row);
+        },
+        // //编辑子节点
+        // 'click .PPermOfedit': function (e, value, row, index) {
+        //     showPPerme(row)
+        //     // update(row.id);
+        // },
+        //删除
+        'click .PermOfdelete': function (e, value, row, index) {
+            del(row.id);
+        }
+
+    };
+
+</script>
+<script type="text/javascript" th:inline="javascript">
+
+    $(function(){
+        $('#switch-modal').bootstrapSwitch({
+            onText:"开启",
+            offText:"关闭",
+            onColor:"success",
+            offColor:"danger",
+            size:"small"
+        });
+    })
+
+
+    //显示新增子节点
+    function addPerm() {
+        $("#permModal").modal("show");
+    }
+
+
+</script>
+</body>
+</html>
