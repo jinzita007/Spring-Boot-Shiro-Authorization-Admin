@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/my_shiro02?useUnicode=true&characterEncoding=utf8
+    username: root
+    password: root
+  devtools:
+    restart:
+      enabled: true
+  thymeleaf:
+    cache: false
+    mode: LEGACYHTML5
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.demo.model
+
