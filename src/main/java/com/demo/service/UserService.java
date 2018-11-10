@@ -46,7 +46,19 @@ public interface UserService {
      */
     public int delete(Integer id);
 
+    /**
+     * 新增用户角色关联
+     * @param userRole
+     * @return
+     */
     public int addUserRole(UserRole userRole);
+
+    /**
+     * 根据用户角色查找用户ID
+     * @param userId
+     * @return
+     */
+    public UserRole findUserRoleByUserId(Integer userId);
 
 
 }
