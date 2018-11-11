@@ -60,5 +60,12 @@ public interface UserService {
      */
     public UserRole findUserRoleByUserId(Integer userId);
 
+    /**
+     * 删除用户角色关联
+     * @param userId
+     * @return
+     */
+    public int deleteUserRole(Integer userId);
+
 
 }
