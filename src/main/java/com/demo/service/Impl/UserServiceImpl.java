@@ -48,5 +48,9 @@ public class UserServiceImpl implements UserService {
     public int addUserRole(UserRole userRole) {
         return userMapper.addUserRole(userRole);
     }
+    @Override
+    public UserRole findUserRoleByUserId(Integer userId){
+        return userMapper.findUserRoleByUserId(userId);
+    }
 
 }
