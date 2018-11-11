@@ -124,6 +124,10 @@ public class UserController {
     public Map<String, Object> saveUserRole(UserRole userRole) {
         Map<String, Object> map = new LinkedHashMap<String, Object>();
         try {
+            if(userRole.getRoleId() == null) {
+                userService.deleteUserRole(userRole.getUserId());
+                map.put("msg", "删除用户角色关联成功");
+            }
 //            userService.saveUserRole(userRole);
             map.put("code", 200);
             map.put("data", userRole);
