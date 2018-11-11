@@ -21,43 +21,36 @@
         </div>
         <!-- /.box-header -->
         <div class="box-body">
-            <table id="roleList" class="table table-bordered table-striped">
-                <thead>
-                <tr>
-                    <th>用户ID</th>
-                    <th>用户名称</th>
-                    <th>用户昵称</th>
-                    <th>创建时间</th>
-                    <th>操作</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="user : ${list}">
-                    <!--<td th:text="${stat.count}">1</td>-->
-                    <td th:text="${user.id}">用户ID</td>
-                    <!--<td><img height="30px" style="border-radius: 15px;" th:src="${user.pic_path}" src="/images/logo.png"></img></td>-->
-                    <td th:text="${user.username}">用户名称</td>
-                    <td th:text="${user.nickname}">用户昵称</td>
-                    <td th:text="${#dates.format(user.reg_time,'yyyy-MM-dd HH:mm:ss')}">创建时间</td>
-                    <td>
-                        <div>
-                            <span data-toggle="tooltip" title="给用户分配角色" class="btn btn-xs btn-primary" th:onclick="'javascript:addUserRole('+${user.id}+');'"><i class="fa fa-user-md"></i> 分配角色</span>
-                            <span data-toggle="tooltip" title="编辑用户信息" class="btn btn-xs btn-info" th:onclick="'javascript:editUser(\''+${user.id}+'\',\''+${user.username}+'\',\''+${user.nickname}+'\');'"
-                            ><i class="fa fa-edit"></i> 编辑</span>
-                            <span data-toggle="tooltip" title="删除用户" class="btn btn-xs btn-danger" ><i class="fa fa-trash-o"></i> 删除</span>
-                            <!--<span data-toggle="tooltip" title="权限不够" ><i class="fa fa-lock"></i> 无权限</span>-->
-                        </div>
-                        <!--<div th:if="${user.user_id == 1 && meid != '1'}">-->
-                            <!--<span><i class="fa fa-lock"></i></span>-->
+            <table id="table_list" class="table table-bordered table-striped">
+                <!--<thead>-->
+                <!--<tr>-->
+                    <!--<th>用户ID</th>-->
+                    <!--<th>用户名称</th>-->
+                    <!--<th>用户昵称</th>-->
+                    <!--<th>创建时间</th>-->
+                    <!--<th>操作</th>-->
+                <!--</tr>-->
+                <!--</thead>-->
+                <!--<tbody>-->
+                <!--<tr th:each="user : ${list}">-->
+                    <!--&lt;!&ndash;<td th:text="${stat.count}">1</td>&ndash;&gt;-->
+                    <!--<td th:text="${user.id}">用户ID</td>-->
+                    <!--&lt;!&ndash;<td><img height="30px" style="border-radius: 15px;" th:src="${user.pic_path}" src="/images/logo.png"></img></td>&ndash;&gt;-->
+                    <!--<td th:text="${user.username}">用户名称</td>-->
+                    <!--<td th:text="${user.nickname}">用户昵称</td>-->
+                    <!--<td th:text="${#dates.format(user.reg_time,'yyyy-MM-dd HH:mm:ss')}">创建时间</td>-->
+                    <!--<td>-->
+                        <!--<div>-->
+                            <!--<span data-toggle="tooltip" title="给用户分配角色" class="btn btn-xs btn-primary" th:onclick="'javascript:addUserRole('+${user.id}+');'"><i class="fa fa-user-md"></i> 分配角色</span>-->
+                            <!--<span data-toggle="tooltip" title="编辑用户信息" class="btn btn-xs btn-info" th:onclick="'javascript:editUser(\''+${user.id}+'\',\''+${user.username}+'\',\''+${user.nickname}+'\');'"-->
+                            <!--&gt;<i class="fa fa-edit"></i> 编辑</span>-->
+                            <!--<span data-toggle="tooltip" title="删除用户" class="btn btn-xs btn-danger" th:onclick="'javascript:deleteUser('+${user.id}+');'"><i class="fa fa-trash-o"></i> 删除</span>-->
+
                         <!--</div>-->
-                    </td>
-                </tr>
-                <!--<tr th:unless="${QX.query == '1'}" >-->
-                    <!--<td colspan="7" align="center">-->
-                        <!--<h2>此用户无权限查看该页面</h2>-->
+
                     <!--</td>-->
                 <!--</tr>-->
-                </tbody>
+                <!--</tbody>-->
             </table>
 
         </div>
@@ -164,22 +157,51 @@
 <script src="https://cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
 <!-- Bootstrap 3.3.6 -->
 <script th:src="@{/adminlite/bootstrap/js/bootstrap.min.js}"></script>
+<script src="https://cdn.bootcss.com/bootstrap-table/1.12.1/bootstrap-table.min.js"></script>
 <script src="https://cdn.bootcss.com/bootstrap-validator/0.5.3/js/bootstrapValidator.js"></script>
 
-<script th:src="@{/adminlite/plugins/datatables/dataTables.bootstrap.js}"></script>
-<script th:src="@{/adminlite/plugins/datatables/jquery.dataTables.js}"></script>
-<!-- AdminLTE App -->
-<script th:src="@{/adminlite/dist/js/app.min.js}"></script>
-<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-<script th:src="@{/adminlite/dist/js/pages/dashboard.js}"></script>
-<!-- AdminLTE for demo purposes -->
-<script th:src="@{/adminlite/dist/js/demo.js}"></script>
 <script src="https://cdn.bootcss.com/layer/2.3/layer.js"></script>
 <script type="text/javascript" th:inline="javascript">
-    $(document).ready(function(){
-        Validator();
 
+    var $table = $('#table_list');
+
+    $(document).ready(function(){
+        $table.bootstrapTable({
+            method: "GET",
+            contentType: "application/x-www-form-urlencoded",
+            url: "user_list",
+            //数据列
+            columns: [{
+                title: "ID",
+                field: "id",
+                sortable: true
+            },{
+                title: "用户名",
+                field: "username"
+             },{
+                title: "昵称",
+                field: "nickname"
+            },{
+                title: "创建时间",
+                field: "reg_time",
+                sortable: true
+            },{
+                title: "操作",
+                field: "empty",
+                formatter: function (value, row, index) {
+                    var operateHtml = '<button class="btn btn-primary btn-xs" type="button" onclick="editUser(\''+row.id+'\',\''+row.username+'\',\''+row.nickname+'\')"><i class="fa fa-edit"></i>&nbsp;修改</button> &nbsp;';
+                    operateHtml = operateHtml + '<button class="btn btn-danger btn-xs" type="button" onclick="deleteUser(\''+row.id+'\')"><i class="fa fa-remove"></i>&nbsp;删除</button> &nbsp;';
+                    operateHtml = operateHtml + '<button class="btn btn-info btn-xs" type="button" onclick="addUserRole(\''+row.id+'\')"><i class="fa fa-arrows"></i>&nbsp;关联角色</button>';
+                    return operateHtml;
+                }
+            }]
+        })
+
+
+        Validator();
     });
+
+
 
     var form = $("#userForm");
 
@@ -285,8 +307,7 @@
                 success: function(data) {
                     if(data.code = 200){
                         layer.msg('保存成功');
-                        // table.ajax.reload();
-
+                        $('#table_list').bootstrapTable("refresh");
                         $('#userModal').modal('hide');
                     } else{
                         layer.msg('保存失败');
@@ -403,6 +424,27 @@
                 }
             }
         })
+    }
+
+    //删除用户以及删除用户角色关联
+    function deleteUser(userId) {
+        layer.confirm('确定删除吗?', {icon: 3, title:'提示'}, function(index){
+            $.ajax({
+                type:"GET",
+                url: "delete",
+                dataType: "json",
+                data: {
+                    userId: userId
+                },
+                success: function (data) {
+                    console.log(data);
+                    if(data.code == 200) {
+                        layer.msg(data.msg);
+                    }
+                }
+            })
+        })
+
     }
 
 
