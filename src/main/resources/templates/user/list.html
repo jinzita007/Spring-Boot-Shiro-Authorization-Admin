@@ -340,10 +340,13 @@
                 } else if(json!=null) {
                     console.log(json.id);
                     str+="<option value=''>无</option>";
-
                     $.each(data.data,function(i,item){
                         if(item.id == json.roleId) {
                             str += '<option value="'+item.id+'" selected>'
+                                + item.name
+                                + '</option>';
+                        } else {
+                            str += '<option value="'+item.id+'">'
                                 + item.name
                                 + '</option>';
                         }
@@ -384,22 +387,22 @@
         console.log("---用户ID---"+userId);
         console.log("---角色ID---"+roleId);
 
-        // $.ajax({
-        //     type:"POST",
-        //     url: "saveUserRole",
-        //     dataType: "json",
-        //     data: {
-        //         userId: userId,
-        //         roleId: roleId
-        //     },
-        //     success: function (data) {
-        //         console.log(data);
-        //         if(data.code == 200) {
-        //             layer.msg("分配角色成功");
-        //
-        //         }
-        //     }
-        // })
+        $.ajax({
+            type:"POST",
+            url: "saveUserRole",
+            dataType: "json",
+            data: {
+                userId: userId,
+                roleId: roleId
+            },
+            success: function (data) {
+                console.log(data);
+                if(data.code == 200) {
+                    layer.msg("分配角色成功");
+
+                }
+            }
+        })
     }
 
 
