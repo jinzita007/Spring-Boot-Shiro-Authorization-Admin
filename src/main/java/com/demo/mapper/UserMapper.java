@@ -56,4 +56,11 @@ public interface UserMapper {
      */
     UserRole findUserRoleByUserId(@Param("userId") Integer userId);
 
+    /**
+     * 删除用户角色关联
+     * @param userId
+     * @return
+     */
+    int deleteUserRole(Integer userId);
+
 }
