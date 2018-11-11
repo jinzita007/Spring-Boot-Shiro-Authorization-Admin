@@ -20,6 +20,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -125,33 +126,42 @@ public class UserController {
         Map<String, Object> map = new LinkedHashMap<String, Object>();
         try {
             UserRole userRole1 = userService.findUserRoleByUserId(userRole.getUserId());
-            if(userRole.getRoleId() == null) {
-                if(userRole1==null) {
-                    map.put("code", 200);
-                    map.put("msg", "不需新增用户角色关联");
-                    map.put("data", userRole);
-                }
-            } else {
-                userService.addUserRole(userRole);
-                map.put("code", 200);
-                map.put("msg", "新增用户角色关联成功");
-                map.put("data", userRole);
-            }
 
             if(userRole1!=null) {
-                if(userRole.getRoleId() == null) {
-                    userService.deleteUserRole(userRole.getUserId());
+                if(userRole1.getRoleId().equals(userRole.getRoleId())) {
                     map.put("code", 200);
-                    map.put("msg", "解除用户角色关联成功");
+                    map.put("msg", "用户角色关联已经存在");
                     map.put("data", userRole);
                 } else {
-                    userService.deleteUserRole(userRole.getUserId());
+                        if(userRole.getRoleId() == null) {
+                           userService.deleteUserRole(userRole.getUserId());
+                            map.put("code", 200);
+                            map.put("msg", "解除用户角色关联成功");
+                            map.put("data", userRole);
+                        } else {
+                            userService.deleteUserRole(userRole.getUserId());
+                            userService.addUserRole(userRole);
+                            map.put("code", 200);
+                            map.put("msg", "新增用户角色关联成功");
+                            map.put("data", userRole);
+
+                        }
+                }
+
+
+            } else if(userRole1==null){
+                if(userRole.getRoleId() == null) {
+                    if(userRole1==null) {
+                        map.put("code", 200);
+                        map.put("msg", "不需新增用户角色关联");
+                        map.put("data", userRole);
+                    }
+                } else {
                     userService.addUserRole(userRole);
                     map.put("code", 200);
                     map.put("msg", "新增用户角色关联成功");
                     map.put("data", userRole);
                 }
-
             }
 
 
@@ -171,9 +181,8 @@ public class UserController {
     public Map<String, Object> findUserRoleByUserId(Integer userId) {
         Map<String, Object> map = new LinkedHashMap<String, Object>();
         try {
-            UserRole userRole = userService.findUserRoleByUserId(userId);
             map.put("code", 200);
-            map.put("data",userRole);
+            map.put("data",userService.findUserRoleByUserId(userId));
         } catch (Exception e) {
             e.printStackTrace();
         }
