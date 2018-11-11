@@ -54,7 +54,7 @@ public interface UserMapper {
      * @param userId
      * @return
      */
-    UserRole findUserRoleByUserId(@Param("userId") Integer userId);
+    UserRole findUserRoleByUserId(Integer userId);
 
     /**
      * 删除用户角色关联
