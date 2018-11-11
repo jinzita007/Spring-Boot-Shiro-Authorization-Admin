@@ -303,32 +303,60 @@
         $('#userRoleModal').modal('show');
         $('input[name="userId"]').val(id);
         console.log(id);
-        getUserRole();
-        findUserRoleByUserId();
+
+        findUserRoleByUserId(function(data){
+            console.log(data);
+            if(data.data == null) {
+                console.log("data数据为空！");
+                var json = data.data;
+                getUserRole(json);
+            } else {
+                console.log("找到data数据！");
+                var json = data.data;
+                getUserRole(json);
+            }
+        });
 
     }
 
-    function getUserRole() {
+    function getUserRole(json) {
+        // $("#userRoleForm").empty();
         var str = "";
         $.ajax({
             type:"GET",
             url: "http://localhost:8080/sys/role/role_list",
             dataType: "json",
             success: function (data) {
-                console.log(data);
-                str+="<option value=''>无</option>";
-                $.each(data.data,function(i,item){
-                    str += '<option value="'+item.id+'">'
-                        + item.name
-                        + '</option>';
+                console.log(json);
+                if(json == null) {
+                    str+="<option value=''>无</option>";
+                    $.each(data.data,function(i,item){
+                        str += '<option value="'+item.id+'">'
+                            + item.name
+                            + '</option>';
+                    })
+                    $("#selectbox2").html(str);
 
-                })
-                $("#selectbox2").html(str);
+                } else if(json!=null) {
+                    console.log(json.id);
+                    str+="<option value=''>无</option>";
+
+                    $.each(data.data,function(i,item){
+                        if(item.id == json.roleId) {
+                            str += '<option value="'+item.id+'" selected>'
+                                + item.name
+                                + '</option>';
+                        }
+
+                    })
+                    $("#selectbox2").html(str);
+                }
+
             }
         })
     }
     //请求查询用户角色--用户ID
-    function findUserRoleByUserId() {
+    function findUserRoleByUserId(callBack) {
         var userId = $('input[name="userId"]').val();
         $.ajax({
             type:"GET",
@@ -339,11 +367,14 @@
             },
             success: function (data) {
                 if(data.code == 200) {
-                    console.log(data);
+                    return callBack(data);
                 }
             }
         })
     }
+
+
+
     //请求新增用户角色关联
     function saveUserRole() {
         //获取选中的项
@@ -353,22 +384,22 @@
         console.log("---用户ID---"+userId);
         console.log("---角色ID---"+roleId);
 
-        $.ajax({
-            type:"POST",
-            url: "saveUserRole",
-            dataType: "json",
-            data: {
-                userId: userId,
-                roleId: roleId
-            },
-            success: function (data) {
-                console.log(data);
-                if(data.code == 200) {
-                    layer.msg("分配角色成功");
-
-                }
-            }
-        })
+        // $.ajax({
+        //     type:"POST",
+        //     url: "saveUserRole",
+        //     dataType: "json",
+        //     data: {
+        //         userId: userId,
+        //         roleId: roleId
+        //     },
+        //     success: function (data) {
+        //         console.log(data);
+        //         if(data.code == 200) {
+        //             layer.msg("分配角色成功");
+        //
+        //         }
+        //     }
+        // })
     }
 
 
