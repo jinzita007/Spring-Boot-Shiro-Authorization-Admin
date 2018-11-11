@@ -57,6 +57,13 @@ public interface UserMapper {
     UserRole findUserRoleByUserId(Integer userId);
 
     /**
+     * 删除用户
+     * @param userId
+     * @return
+     */
+    int deleteUser(Integer userId);
+
+    /**
      * 删除用户角色关联
      * @param userId
      * @return

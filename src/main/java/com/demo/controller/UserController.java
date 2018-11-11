@@ -41,13 +41,20 @@ public class UserController {
      */
     @RequiresPermissions("user:list")
     @RequestMapping(value="list",method =RequestMethod.GET)
-    public String index(Model model) {
-        //Date date = new Date();
-//        DateFormat dateFormat = new SimpleDateFormat();
-//        dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-//        String time = dateFormat.format(date);
-        model.addAttribute("list", userService.findAll());
+    public String index() {
         return "user/list";
+    }
+
+    /**
+     * 查询用户列表
+     * @return
+     */
+    @RequestMapping(value="user_list",method =RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object> getUserList(){
+        Map<String, Object> map = new LinkedHashMap<String, Object>();
+        map.put("data", userService.findAll());
+        return map;
     }
 
     /**
@@ -188,5 +195,21 @@ public class UserController {
         }
         return map;
     }
+
+    @RequestMapping(value="delete",method =RequestMethod.GET)
+    @ResponseBody
+    public Map<String, Object> delete(Integer userId) {
+        Map<String, Object> map = new LinkedHashMap<String, Object>();
+        try {
+            userService.delete(userId);
+            map.put("code", 200);
+            map.put("msg", "删除成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
+
+
 
 }

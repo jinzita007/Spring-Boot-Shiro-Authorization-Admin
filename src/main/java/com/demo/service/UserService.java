@@ -44,7 +44,7 @@ public interface UserService {
      * @param id
      * @return
      */
-    public int delete(Integer id);
+    public void delete(Integer id);
 
     /**
      * 新增用户角色关联

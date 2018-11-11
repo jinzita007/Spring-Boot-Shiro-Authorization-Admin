@@ -76,7 +76,7 @@
     </update>
 
     <!--删除用户-->
-    <delete id="delete" parameterType="long">
+    <delete id="delete" parameterType="int">
         DELETE FROM user
         WHERE id = #{id}
     </delete>
@@ -114,6 +114,8 @@
         user_role
         WHERE user_id = #{userId}
     </delete>
+
+
 
 
 
