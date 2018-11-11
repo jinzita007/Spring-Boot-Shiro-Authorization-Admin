@@ -20,13 +20,13 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     @Override
-    public User findByUsername(String username) {
-        return userMapper.findByUsername(username);
+    public List<User> findAll() {
+        return userMapper.findAll();
     }
 
     @Override
-    public List<User> findAll() {
-        return userMapper.findAll();
+    public User findByUsername(String username) {
+        return userMapper.findByUsername(username);
     }
 
     @Override

@@ -16,13 +16,18 @@ import java.util.Set;
 @Mapper
 public interface UserMapper {
 
-    User findByUsername(String username);
-
     /**
      * 查询所有用户信息
      * @return
      */
     List<User> findAll();
+
+    /**
+     * 根据用户查询用户名
+     * @param username
+     * @return
+     */
+    User findByUsername(String username);
 
     /**
      * 新增用户

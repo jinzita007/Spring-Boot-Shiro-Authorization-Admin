@@ -13,17 +13,17 @@ import java.util.Set;
 public interface UserService {
 
     /**
+     * 查询所有用户信息
+     * @return
+     */
+    public List<User> findAll();
+
+    /**
      * 根据用户查询用户名
      * @param username
      * @return
      */
     public User findByUsername(String username);
-
-    /**
-     * 查询所有用户信息
-     * @return
-     */
-    public List<User> findAll();
 
     /**
      * 新增用户

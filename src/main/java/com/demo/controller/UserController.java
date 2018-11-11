@@ -94,6 +94,7 @@ public class UserController {
             user.setPassword(encodedPassword);
             user.setSalt(salt2);
             user.setReg_time(timestamp);
+            userService.save(user);
             map.put("code", 200);
             map.put("password", encodedPassword);
             map.put("data", user);
