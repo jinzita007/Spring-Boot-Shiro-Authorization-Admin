@@ -1,5 +1,6 @@
 package com.demo.controller;
 
+import com.demo.mapper.UserMapper;
 import com.demo.model.User;
 import com.demo.model.UserRole;
 import com.demo.service.UserService;
@@ -95,6 +96,11 @@ public class UserController {
         return map;
     }
 
+    /**
+     * 更新用户
+     * @param user
+     * @return
+     */
     @RequestMapping(value="update",method =RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> update(User user) {
@@ -108,7 +114,11 @@ public class UserController {
         return map;
     }
 
-
+    /**
+     * 新增用户角色关联
+     * @param userRole
+     * @return
+     */
     @RequestMapping(value="saveUserRole",method =RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> saveUserRole(UserRole userRole) {
@@ -117,6 +127,25 @@ public class UserController {
 //            userService.saveUserRole(userRole);
             map.put("code", 200);
             map.put("data", userRole);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
+
+    /**
+     * 根据用户角色查找用户ID
+     * @param userId
+     * @return
+     */
+    @RequestMapping(value="findUserRoleByUserId",method =RequestMethod.GET)
+    @ResponseBody
+    public Map<String, Object> findUserRoleByUserId(Integer userId) {
+        Map<String, Object> map = new LinkedHashMap<String, Object>();
+        try {
+            UserRole userRole = userService.findUserRoleByUserId(userId);
+            map.put("code", 200);
+            map.put("data",userRole);
         } catch (Exception e) {
             e.printStackTrace();
         }
