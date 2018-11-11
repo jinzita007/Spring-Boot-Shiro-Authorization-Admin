@@ -304,6 +304,7 @@
         $('input[name="userId"]').val(id);
         console.log(id);
         getUserRole();
+        findUserRoleByUserId();
 
     }
 
@@ -326,7 +327,24 @@
             }
         })
     }
-    
+    //请求查询用户角色--用户ID
+    function findUserRoleByUserId() {
+        var userId = $('input[name="userId"]').val();
+        $.ajax({
+            type:"GET",
+            url: "http://localhost:8080/sys/user/findUserRoleByUserId",
+            dataType: "json",
+            data: {
+                userId: userId
+            },
+            success: function (data) {
+                if(data.code == 200) {
+                    console.log(data);
+                }
+            }
+        })
+    }
+    //请求新增用户角色关联
     function saveUserRole() {
         //获取选中的项
         var options=$("#selectbox2 option:selected");
