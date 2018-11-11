@@ -16,6 +16,12 @@
         <!--</collection>-->
     <!--</resultMap>-->
 
+    <resultMap id="userRoleMap" type="com.demo.model.UserRole">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="roleId" column="role_id"/>
+    </resultMap>
+
 
     <!--根据用户查询用户名-->
     <select id="findByUsername" resultType="User">
@@ -88,19 +94,26 @@
         #{roleId}
         )
     </insert>
-    
-    <select id="findUserRoleByUserId" resultType="UserRole">
+
+    <!--根据用户角色查询用户ID-->
+    <select id="findUserRoleByUserId" resultMap="userRoleMap">
         SELECT
         id,
         user_id,
         role_id
+        FROM
+        user_role
         WHERE
         user_id = #{userId}
     </select>
 
-
-
-
+    <!--删除用户角色关联-->
+    <delete id="deleteUserRole" parameterType="int">
+        DELETE
+        FROM
+        user_role
+        WHERE user_id = #{userId}
+    </delete>
 
 
 
