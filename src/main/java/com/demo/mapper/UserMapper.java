@@ -4,6 +4,7 @@ package com.demo.mapper;
 import com.demo.model.User;
 import com.demo.model.UserRole;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Set;
@@ -53,6 +54,6 @@ public interface UserMapper {
      * @param userId
      * @return
      */
-    UserRole findUserRoleByUserId(Integer userId);
+    UserRole findUserRoleByUserId(@Param("userId") Integer userId);
 
 }
