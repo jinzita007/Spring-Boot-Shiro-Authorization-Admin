@@ -124,13 +124,37 @@ public class UserController {
     public Map<String, Object> saveUserRole(UserRole userRole) {
         Map<String, Object> map = new LinkedHashMap<String, Object>();
         try {
+            UserRole userRole1 = userService.findUserRoleByUserId(userRole.getUserId());
             if(userRole.getRoleId() == null) {
-                userService.deleteUserRole(userRole.getUserId());
-                map.put("msg", "删除用户角色关联成功");
+                if(userRole1==null) {
+                    map.put("code", 200);
+                    map.put("msg", "不需新增用户角色关联");
+                    map.put("data", userRole);
+                }
+            } else {
+                userService.addUserRole(userRole);
+                map.put("code", 200);
+                map.put("msg", "新增用户角色关联成功");
+                map.put("data", userRole);
             }
-//            userService.saveUserRole(userRole);
-            map.put("code", 200);
-            map.put("data", userRole);
+
+            if(userRole1!=null) {
+                if(userRole.getRoleId() == null) {
+                    userService.deleteUserRole(userRole.getUserId());
+                    map.put("code", 200);
+                    map.put("msg", "解除用户角色关联成功");
+                    map.put("data", userRole);
+                } else {
+                    userService.deleteUserRole(userRole.getUserId());
+                    userService.addUserRole(userRole);
+                    map.put("code", 200);
+                    map.put("msg", "新增用户角色关联成功");
+                    map.put("data", userRole);
+                }
+
+            }
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
