@@ -1,27 +1,22 @@
 package com.demo.controller;
 
-import com.demo.mapper.UserMapper;
 import com.demo.model.User;
 import com.demo.model.UserRole;
 import com.demo.service.UserService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.crypto.hash.SimpleHash;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author zhouyulong
@@ -32,6 +27,9 @@ import java.util.Map;
 @Controller
 @RequestMapping("/sys/user")
 public class UserController {
+
+    private final static Logger logger= (Logger) LoggerFactory.getLogger(UserController.class);
+
     @Autowired
     private UserService userService;
 
@@ -123,11 +121,30 @@ public class UserController {
     public Map<String, Object> update(User user) {
         Map<String, Object> map = new LinkedHashMap<String, Object>();
         try {
-            map.put("code", 200);
-            map.put("data", userService.update(user));
+            userService.update(user);
+            map.put("code", 202);
+            map.put("msg", "更新成功");
+            map.put("data", user);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return map;
+    }
+
+    @RequestMapping(value = "/updateStatus", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String,Object> updateStatus(User user) {
+        Map<String,Object> map = new HashMap<>();
+        try {
+            userService.updateStatus(user);
+            logger.info("修改状态成功!");
+            map.put("code", 204);
+            map.put("msg", "修改状态成功");
+            map.put("data", user);
+        } catch (Exception e) {
+            map.put("msg", "error");
+        }
+
         return map;
     }
 
@@ -211,7 +228,7 @@ public class UserController {
         Map<String, Object> map = new LinkedHashMap<String, Object>();
         try {
             userService.delete(userId);
-            map.put("code", 200);
+            map.put("code", 204);
             map.put("msg", "删除成功");
         } catch (Exception e) {
             e.printStackTrace();
