@@ -40,6 +40,12 @@ public interface UserService {
     public int update(User user);
 
     /**
+     * 更改用户状态
+     * @param user
+     */
+    public void updateStatus(User user);
+
+    /**
      * 删除用户
      * @param id
      * @return
