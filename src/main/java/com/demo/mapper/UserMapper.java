@@ -42,6 +42,13 @@ public interface UserMapper {
     int update(User user);
 
     /**
+     * 更改用户状态
+     * @param user
+     * @return
+     */
+    int updateStatus(User user);
+
+    /**
      * 删除用户
      * @param id
      */
@@ -60,13 +67,6 @@ public interface UserMapper {
      * @return
      */
     UserRole findUserRoleByUserId(Integer userId);
-
-    /**
-     * 删除用户
-     * @param userId
-     * @return
-     */
-    int deleteUser(Integer userId);
 
     /**
      * 删除用户角色关联
