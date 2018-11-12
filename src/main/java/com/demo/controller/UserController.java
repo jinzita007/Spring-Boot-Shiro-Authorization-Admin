@@ -91,13 +91,21 @@ public class UserController {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
         try {
-            user.setPassword(encodedPassword);
-            user.setSalt(salt2);
-            user.setReg_time(timestamp);
-            userService.save(user);
-            map.put("code", 200);
-            map.put("password", encodedPassword);
-            map.put("data", user);
+            User user1 = userService.findByUsername(user.getUsername());
+            if(user1!=null) {
+                map.put("code", 409);
+                map.put("msg", "用户已经存在");
+                map.put("data", user);
+            } else {
+                user.setPassword(encodedPassword);
+                user.setSalt(salt2);
+                user.setReg_time(timestamp);
+                userService.save(user);
+                map.put("code", 201);
+                map.put("msg", "新增用户成功");
+                map.put("data", user);
+
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
