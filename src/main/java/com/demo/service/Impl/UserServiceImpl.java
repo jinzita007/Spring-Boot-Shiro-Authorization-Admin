@@ -40,6 +40,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void updateStatus(User user) {
+        userMapper.updateStatus(user);
+    }
+
+    @Override
     public void delete(Integer userId) {
         userMapper.delete(userId);
         userMapper.deleteUserRole(userId);
