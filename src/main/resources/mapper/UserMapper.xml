@@ -70,7 +70,15 @@
         user
         SET
         username = #{username},
-        nickname = #{nickname},
+        nickname = #{nickname}
+        WHERE id = #{id}
+    </update>
+
+    <!--更改状态-->
+    <update id="updateStatus" parameterType="User">
+        UPDATE
+        user
+        SET
         status = #{status}
         WHERE id = #{id}
     </update>
