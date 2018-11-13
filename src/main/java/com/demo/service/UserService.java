@@ -25,6 +25,15 @@ public interface UserService {
      */
     public User findByUsername(String username);
 
+
+    /**
+     * 用户模糊查询
+     * @param q
+     * @return
+     */
+    public List<User> selectByUsername(String q);
+
+
     /**
      * 新增用户
      * @param user
