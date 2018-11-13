@@ -1,0 +1,18 @@
+
+/**
+用户页面css
+ */
+#box-header {
+    text-align: left;
+    margin: 10px 10px 10px 15px;
+}
+#search_name {
+    margin-left: 0em;
+    margin-right: 0.5em;
+    display: inline-block;
+    width: auto;
+}
+#btn-tools {
+    height: 30px;
+    line-height: 30px;
+}

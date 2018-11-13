@@ -13,46 +13,49 @@
 
 <!-- Main content -->
 <section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="nav-tabs-custom">
+                <div class="tab-content">
+        <div class="tab-pane active" id="tab-content-list">
     <div class="box">
-        <div class="box-header">
-            <h3 class="box-title">用户列表</h3>
-            <br><br>
-            <button class="btn btn-success btn-sm" id="addUser" onclick="addUser()"><i class="fa fa-plus"></i> &nbsp;&nbsp;添加用户</button>
-        </div>
+        <!--<div class="box-header">-->
+            <div id="box-header">
+                <div id="btn-tools">
+                    <div class="btn-group">
+                    <input type="text" class="form-control" name="Name" id="search_name" placeholder="搜索..."/>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary btn-sm" id="search_btn"><i class="fa fa-search"></i>&nbsp;&nbsp;查询</button>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-success btn-sm" id="addUser" onclick="addUser()"><i class="fa fa-plus"></i> &nbsp;&nbsp;添加用户</button>
+                    </div>
+                    <div class="btn-group">
+                        <a href="javascript:;" class="btn btn-primary btn-refresh btn-sm" title="刷新"><i class="fa fa-refresh"></i> </a>
+                    </div>
+                </div>
+
+            </div>
+        <!--</div>-->
+
+
+        <!--<div style="padding: 0; vertical-align:middle; height: 30px; line-height: 30px;">-->
+            <!--<div class="col-sm-2" style="padding: 0px 10px 0px 0px;">-->
+                <!--<input type="text" class="form-control" name="Name" id="search_name" placeholder="搜索..."/>-->
+            <!--</div>-->
+            <!--<button class="btn btn-primary btn-sm" id="search_btn"><i class="fa fa-search"></i>&nbsp;&nbsp;查询</button>-->
+            <!--<button class="btn btn-success btn-sm" id="addUser" onclick="addUser()"><i class="fa fa-plus"></i> &nbsp;&nbsp;添加用户</button>-->
+        <!--</div>-->
+
         <!-- /.box-header -->
         <div class="box-body">
-            <table id="table_list" class="table table-bordered table-striped">
-                <!--<thead>-->
-                <!--<tr>-->
-                    <!--<th>用户ID</th>-->
-                    <!--<th>用户名称</th>-->
-                    <!--<th>用户昵称</th>-->
-                    <!--<th>创建时间</th>-->
-                    <!--<th>操作</th>-->
-                <!--</tr>-->
-                <!--</thead>-->
-                <!--<tbody>-->
-                <!--<tr th:each="user : ${list}">-->
-                    <!--&lt;!&ndash;<td th:text="${stat.count}">1</td>&ndash;&gt;-->
-                    <!--<td th:text="${user.id}">用户ID</td>-->
-                    <!--&lt;!&ndash;<td><img height="30px" style="border-radius: 15px;" th:src="${user.pic_path}" src="/images/logo.png"></img></td>&ndash;&gt;-->
-                    <!--<td th:text="${user.username}">用户名称</td>-->
-                    <!--<td th:text="${user.nickname}">用户昵称</td>-->
-                    <!--<td th:text="${#dates.format(user.reg_time,'yyyy-MM-dd HH:mm:ss')}">创建时间</td>-->
-                    <!--<td>-->
-                        <!--<div>-->
-                            <!--<span data-toggle="tooltip" title="给用户分配角色" class="btn btn-xs btn-primary" th:onclick="'javascript:addUserRole('+${user.id}+');'"><i class="fa fa-user-md"></i> 分配角色</span>-->
-                            <!--<span data-toggle="tooltip" title="编辑用户信息" class="btn btn-xs btn-info" th:onclick="'javascript:editUser(\''+${user.id}+'\',\''+${user.username}+'\',\''+${user.nickname}+'\');'"-->
-                            <!--&gt;<i class="fa fa-edit"></i> 编辑</span>-->
-                            <!--<span data-toggle="tooltip" title="删除用户" class="btn btn-xs btn-danger" th:onclick="'javascript:deleteUser('+${user.id}+');'"><i class="fa fa-trash-o"></i> 删除</span>-->
-
-                        <!--</div>-->
-
-                    <!--</td>-->
-                <!--</tr>-->
-                <!--</tbody>-->
-            </table>
-
+            <table id="table_list" class="table table-bordered table-striped"></table>
+        </div>
+    </div>
+        </div>
+    </div>
+        </div>
         </div>
     </div>
 </section>
@@ -231,6 +234,16 @@
 
         Validator();
         initTable();
+
+        //刷新数据
+        $(".btn-refresh").click(function(){
+            $('#table_list').bootstrapTable('refresh', {url: "user_list"});
+        })
+        //查询按钮事件
+        $('#search_btn').click(function() {
+            $('#table_list').bootstrapTable('refresh', {url: "user_list"});
+        })
+
     });
 
 
@@ -248,7 +261,10 @@
             pageNumber: 1,                      //初始化加载第一页，默认第一页,并记录
             pageSize: 5,                        //每页的记录行数（*）
             pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
+            paginationPreText: '‹',             //指定分页条中上一页按钮的图标或文字,这里是<
+            paginationNextText: '›',            //指定分页条中下一页按钮的图标或文字,这里是>
             queryParamsType:'',                 //默认值为limit
+            showRefresh : false,
             //得到查询的参数
             queryParams: queryParams,           // 请求参数
             // 数据列
@@ -288,11 +304,14 @@
                 }
             }
             ],
-            onLoadSuccess: function() {
-                document.querySelector(".fixed-table-body").addEventListener("scroll",function(){
-                    alert("kkkk");
-                });
-            }
+            //加载成功时执行
+            onLoadSuccess: function(data){
+                console.log("加载成功");
+            },
+            //加载失败时执行
+            onLoadError: function(status){
+                console.log("加载数据失败"+status);
+            },
         })
     }
 
@@ -301,16 +320,15 @@
         var temp = {
             pageNumber: params.pageNumber, //页码
             pageSize: params.pageSize,  //页面大小
-            // username: $("#search_username").val(),//后台请求传的查询参数
-            // name:$("#search_name").val(),
-            // sex:$("#search_sex").val(),
-            // phone:$("#search_mobile").val(),
-            // email:$("#search_email").val(),
+            q:$('#search_name').val(), //后台请求传的查询参数
+
         };
         return temp;
     };
 
-    //验证数据
+
+
+        //验证数据
     function Validator() {
         form.bootstrapValidator({
             message: '输入值不合法',
