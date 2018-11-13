@@ -30,6 +30,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<User> selectByUsername(String q) {
+        return userMapper.selectByUsername(q);
+    }
+
+    @Override
     public int save(User user) {
         return userMapper.save(user);
     }
