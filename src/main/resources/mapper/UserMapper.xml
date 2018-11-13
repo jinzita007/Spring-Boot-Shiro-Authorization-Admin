@@ -51,6 +51,27 @@
         user
     </select>
 
+    <!--根据用户模糊查询用户名-->
+    <select id="selectByUsername" parameterType="string" resultType="User">
+        SELECT
+        id,
+        username,
+        password,
+        salt,
+        nickname,
+        status,
+        reg_time
+        FROM
+        user
+        <where>
+            <if test="q != null and q !=''">
+                AND username LIKE CONCAT(CONCAT('%', #{q}),'%')
+                OR nickname LIKE CONCAT(CONCAT('%', #{q}), '%')
+            </if>
+        </where>
+
+    </select>
+
     <!--新增用户-->
     <insert id="save" parameterType="User">
         INSERT INTO user(username, password, salt, nickname, status, reg_time)
