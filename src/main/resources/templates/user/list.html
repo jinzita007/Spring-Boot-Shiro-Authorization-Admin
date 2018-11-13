@@ -191,6 +191,8 @@
 <script th:src="@{/adminlite/bootstrap/js/bootstrap.min.js}"></script>
 <script src="https://cdn.bootcss.com/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"></script>
 <script src="https://cdn.bootcss.com/bootstrap-table/1.12.1/bootstrap-table.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap-table/1.12.1/locale/bootstrap-table-zh-CN.min.js"></script>
+
 <script src="https://cdn.bootcss.com/bootstrap-validator/0.5.3/js/bootstrapValidator.js"></script>
 
 <script src="https://cdn.bootcss.com/layer/2.3/layer.js"></script>
@@ -227,11 +229,29 @@
             }
         });
 
+        Validator();
+        initTable();
+    });
+
+
+    function initTable() {
         $table.bootstrapTable({
-            method: "GET",
+
+            method: "GET",                      //请求后台的URL（*）
             contentType: "application/x-www-form-urlencoded",
-            url: "user_list",
-            //数据列
+            url: "user_list",                   //请求方式（*）
+            dataType : "json",                  // 数据类型
+            pagination : true,                  // 是否启用分页
+            showPaginationSwitch : false,       // 是否显示 数据条数选择框
+            sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+            cache: false,                       //是否使用缓存，默认为true
+            pageNumber: 1,                      //初始化加载第一页，默认第一页,并记录
+            pageSize: 5,                        //每页的记录行数（*）
+            pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
+            queryParamsType:'',                 //默认值为limit
+            //得到查询的参数
+            queryParams: queryParams,           // 请求参数
+            // 数据列
             columns: [{
                 title: "ID",
                 field: "id",
@@ -239,7 +259,7 @@
             },{
                 title: "用户名",
                 field: "username"
-             },{
+            },{
                 title: "昵称",
                 field: "nickname"
             },{
@@ -247,11 +267,11 @@
                 sortable: true,
                 field: "status",
                 formatter: function (value, row, index) {
-                        var color = typeof this.color !== 'undefined' ? this.color : 'success';
-                        var yes = typeof this.yes !== 'undefined' ? this.yes : 1;
-                        var no = typeof this.no !== 'undefined' ? this.no : 0;
-                        return "<a href='javascript:;' data-toggle='tooltip' class='btn-change' data-id='"
-                            + row.id + "' data-params='" + (value == yes ? yes : no) + "'><i class='fa fa-toggle-on " + (value == yes ? 'text-' + color : 'fa-flip-horizontal text-gray') + " fa-2x'></i></a>";
+                    var color = typeof this.color !== 'undefined' ? this.color : 'success';
+                    var yes = typeof this.yes !== 'undefined' ? this.yes : 1;
+                    var no = typeof this.no !== 'undefined' ? this.no : 0;
+                    return "<a href='javascript:;' data-toggle='tooltip' class='btn-change' data-id='"
+                        + row.id + "' data-params='" + (value == yes ? yes : no) + "'><i class='fa fa-toggle-on " + (value == yes ? 'text-' + color : 'fa-flip-horizontal text-gray') + " fa-2x'></i></a>";
                 }
             }, {
                 title: "创建时间",
@@ -266,52 +286,29 @@
                     operateHtml = operateHtml + '<button class="btn btn-info btn-xs" type="button" onclick="addUserRole(\''+row.id+'\')"><i class="fa fa-arrows"></i>&nbsp;关联角色</button>';
                     return operateHtml;
                 }
-            }]
-        })
-
-        Validator();
-    });
-
-
-
-    var form = $("#userForm");
-
-    //新增用户
-    function addUser(){
-        // 用于开关组件初始化
-        $("#user_status").each(function() {
-            var status = $("#user_status").val;
-            $(this).bootstrapSwitch({
-                onColor : "success",
-                offColor : "warning",
-                size:"small"
-            }).bootstrapSwitch('state', status);
-        });
-
-
-        // 监听开关状态发生变化时，触发事件
-        $("#user_status").on('switchChange.bootstrapSwitch',function (event,state) {
-
-            var state = state==false?0:1;
-            if(state) {
-                $("#user_status").val(state);
-            } else {
-                $("#user_status").val(state);
             }
-            })
-
-        $("#userModal").modal("show");
-        $("#userForm").val("");
+            ],
+            onLoadSuccess: function() {
+                document.querySelector(".fixed-table-body").addEventListener("scroll",function(){
+                    alert("kkkk");
+                });
+            }
+        })
     }
 
-    //编辑用户
-    function editUser(id,username,nickname) {
-        $("#userFormEdit #uid").val(id);
-        $("input[name='username']").val(username);
-        $("input[name='nickname']").val(nickname);
-        $("#userModalEdit").modal("show");
-
-    }
+    // 分页查询参数
+    function queryParams (params) {
+        var temp = {
+            pageNumber: params.pageNumber, //页码
+            pageSize: params.pageSize,  //页面大小
+            // username: $("#search_username").val(),//后台请求传的查询参数
+            // name:$("#search_name").val(),
+            // sex:$("#search_sex").val(),
+            // phone:$("#search_mobile").val(),
+            // email:$("#search_email").val(),
+        };
+        return temp;
+    };
 
     //验证数据
     function Validator() {
@@ -372,6 +369,55 @@
 
     }
 
+    var form = $("#userForm");
+
+    //新增用户
+    function addUser(){
+        // 用于开关组件初始化
+        $("#user_status").each(function() {
+            var status = $("#user_status").val;
+            $(this).bootstrapSwitch({
+                onColor : "success",
+                offColor : "warning",
+                size:"small"
+            }).bootstrapSwitch('state', status);
+        });
+
+
+        // 监听开关状态发生变化时，触发事件
+        $("#user_status").on('switchChange.bootstrapSwitch',function (event,state) {
+
+            var state = state==false?0:1;
+            if(state) {
+                $("#user_status").val(state);
+            } else {
+                $("#user_status").val(state);
+            }
+            })
+
+        reset();
+
+        $("#userModal").modal("show");
+
+
+    }
+
+    //清空表单
+    function reset() {
+        $("#userForm input[name='username']").val("");
+        $("#userForm input[name='nickname']").val("");
+        $("#userForm input[name='password']").val("");
+    }
+
+    //编辑用户
+    function editUser(id,username,nickname) {
+
+        $("#userFormEdit #uid").val(id);
+        $("#userFormEdit input[name='username']").val(username);
+        $("#userFormEdit input[name='nickname']").val(nickname);
+        $("#userModalEdit").modal("show");
+
+    }
 
 
     //新增用户--确认按钮
@@ -401,6 +447,7 @@
                         layer.msg(data.msg);
                         $('#table_list').bootstrapTable("refresh");
                         $('#userModal').modal('hide');
+
                     } else if(data.code == 409){
                         layer.msg(data.msg);
 
@@ -454,7 +501,7 @@
     }
 
     function getUserRole(json) {
-        // $("#userRoleForm").empty();
+
         var str = "";
         $.ajax({
             type:"GET",
