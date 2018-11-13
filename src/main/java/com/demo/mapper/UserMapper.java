@@ -30,6 +30,13 @@ public interface UserMapper {
     User findByUsername(String username);
 
     /**
+     * 用户模糊查询
+     * @param q
+     * @return
+     */
+    List<User> selectByUsername(@Param("q") String q);
+
+    /**
      * 新增用户
      * @param user
      */
