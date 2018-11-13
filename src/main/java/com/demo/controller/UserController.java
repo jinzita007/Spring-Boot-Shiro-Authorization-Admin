@@ -3,6 +3,8 @@ package com.demo.controller;
 import com.demo.model.User;
 import com.demo.model.UserRole;
 import com.demo.service.UserService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.crypto.hash.SimpleHash;
@@ -10,10 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 import java.util.*;
@@ -49,9 +48,27 @@ public class UserController {
      */
     @RequestMapping(value="user_list",method =RequestMethod.GET)
     @ResponseBody
-    public Map<String,Object> getUserList(){
+    public Map<String,Object> getUserList(@RequestParam(defaultValue= "1") Integer pageNumber, Integer pageSize, String q){
+        //调用分页工具类，传递过来的当前页和每页条数
+        PageHelper.startPage(pageNumber, pageSize, true);
+
         Map<String, Object> map = new LinkedHashMap<String, Object>();
-        map.put("data", userService.findAll());
+
+        if(q==null) {
+            //将查询出来的集合放进list对象里面
+            List<User> userList = userService.findAll();
+            //将查询出来的数据集放进PageInfo
+            PageInfo<User> info = new PageInfo<>(userList);
+            map.put("total", info.getTotal());
+            map.put("rows", info.getList());
+        } else {
+            System.out.println("进入模糊查询...");
+            List<User> user = userService.selectByUsername(q);
+            PageInfo<User> info2 = new PageInfo<>(user);
+            map.put("total", info2.getTotal());
+            map.put("rows", info2.getList());
+        }
+
         return map;
     }
 
