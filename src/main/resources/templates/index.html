@@ -40,31 +40,31 @@
     <![endif]-->
     <script type="text/javascript">
 
-        function resizeFrameHeight(){
-            var ifm = document.getElementById("mainBodyFrame");
-            ifm.height = document.documentElement.clientHeight - 50;
-        }
-
-        window.onresize=function(){
-            resizeFrameHeight();
-        }
+        // function resizeFrameHeight(){
+        //     var ifm = document.getElementById("mainBodyFrame");
+        //     ifm.height = document.documentElement.clientHeight - 50;
+        // }
+        //
+        // window.onresize=function(){
+        //     resizeFrameHeight();
+        // }
 
         //iframe 自适应
-        // function setIframeHeight(iframe) {
-        //     if (iframe) {
-        //         var iframeWin = iframe.contentWindow
-        //             || iframe.contentDocument.parentWindow;
-        //         if (iframeWin.document.body) {
-        //             iframe.height = iframeWin.document.documentElement.scrollHeight
-        //                 || iframeWin.document.body.scrollHeight;
-        //         }
-        //     }
-        // };
-        //
-        // window.onload = function() {
-        //     setIframeHeight(document.getElementById('mainBodyFrame'));
-        //
-        // };
+        function setIframeHeight(iframe) {
+            if (iframe) {
+                var iframeWin = iframe.contentWindow
+                    || iframe.contentDocument.parentWindow;
+                if (iframeWin.document.body) {
+                    iframe.height = iframeWin.document.documentElement.scrollHeight
+                        || iframeWin.document.body.scrollHeight;
+                }
+            }
+        };
+
+        window.onload = function() {
+            setIframeHeight(document.getElementById('mainBodyFrame'));
+
+        };
     </script>
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
