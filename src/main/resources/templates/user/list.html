@@ -40,14 +40,6 @@
         <!--</div>-->
 
 
-        <!--<div style="padding: 0; vertical-align:middle; height: 30px; line-height: 30px;">-->
-            <!--<div class="col-sm-2" style="padding: 0px 10px 0px 0px;">-->
-                <!--<input type="text" class="form-control" name="Name" id="search_name" placeholder="搜索..."/>-->
-            <!--</div>-->
-            <!--<button class="btn btn-primary btn-sm" id="search_btn"><i class="fa fa-search"></i>&nbsp;&nbsp;查询</button>-->
-            <!--<button class="btn btn-success btn-sm" id="addUser" onclick="addUser()"><i class="fa fa-plus"></i> &nbsp;&nbsp;添加用户</button>-->
-        <!--</div>-->
-
         <!-- /.box-header -->
         <div class="box-body">
             <table id="table_list" class="table table-bordered table-striped"></table>
@@ -415,6 +407,7 @@
 
         reset();
 
+
         $("#userModal").modal("show");
 
 
@@ -429,11 +422,11 @@
 
     //编辑用户
     function editUser(id,username,nickname) {
-
         $("#userFormEdit #uid").val(id);
         $("#userFormEdit input[name='username']").val(username);
         $("#userFormEdit input[name='nickname']").val(nickname);
         $("#userModalEdit").modal("show");
+
 
     }
 

@@ -73,10 +73,7 @@
                     <div class="form-group">
                         <label class="col-sm-3 control-label">菜单</label>
                         <div class="col-sm-9 radio">
-                            <label for="row[ismenu]-normal">
-                                <input id="row[ismenu]-normal" checked="checked" name="ismenu" type="radio" value="1"> 正常</label>
-                            <label for="row[ismenu]-hidden">
-                                <input id="row[ismenu]-hidden" name="ismenu" type="radio" value="0"> 隐藏</label>
+                            <input id="user_ismenu" class="row_ismenu" type="checkbox" name='ismenu' value="1"/>
                         </div>
                     </div>
 
@@ -84,9 +81,11 @@
                     <div class="form-group">
                         <label class="col-sm-3 control-label">状态</label>
                     <div class="col-sm-9 radio">
-                        <label for="row[status]-normal">
-                            <input id="row[status]-normal" checked="checked" name="status" type="radio" value="1"> 正常</label>
-                        <label for="row[status]-hidden"><input id="row[status]-hidden" name="status" type="radio" value="0"> 隐藏</label>
+                        <!--<label for="row[status]-normal">-->
+                            <!--<input id="row[status]-normal" checked="checked" name="status" type="radio" value="1"> 正常</label>-->
+                        <!--<label for="row[status]-hidden">-->
+                            <!--<input id="row[status]-hidden" name="status" type="radio" value="0"> 隐藏</label>-->
+                        <input id="row_status" class="row_status" type="checkbox" name='status' value="1"/>
                     </div>
                     </div>
 
@@ -101,7 +100,7 @@
     </div>
 </div>
 
-<!--<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>-->
+
 <script src="https://cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
 
 <script src="https://cdn.bootcss.com/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"></script>
@@ -185,7 +184,7 @@
                         $table.bootstrapTable('resetWidth');
                     }
                 });
-                $("input[name='ismenu']").each(function(){
+                $(".switch-modal").each(function(){
                     $(this).bootstrapSwitch({
                         onText:"开启",
                         offText:"关闭",
@@ -235,9 +234,9 @@
     //格式化切换菜单按钮
     function menuSwitch(value,row) {
         if(value==1){
-            return '<input id="switch-modal" type="checkbox" name="ismenu" value="'+value+'" idValue="'+row.id+'" checked />';
+            return '<input id="switch-modal" class="switch-modal" type="checkbox" name="ismenu" value="'+value+'" idValue="'+row.id+'" checked />';
         }else if(value == 0){
-            return '<input id="switch-modal" type="checkbox" name="ismenu" value="'+value+'" idValue="'+row.id+'" check/>';
+            return '<input id="switch-modal" class="switch-modal" type="checkbox" name="ismenu" value="'+value+'" idValue="'+row.id+'" check/>';
         }
     }
 
@@ -293,11 +292,7 @@
         'click .PermOfedit': function (e, value, row, index){
             showPerme(row);
         },
-        // //编辑子节点
-        // 'click .PPermOfedit': function (e, value, row, index) {
-        //     showPPerme(row)
-        //     // update(row.id);
-        // },
+
         //删除
         'click .PermOfdelete': function (e, value, row, index) {
             del(row.id);
@@ -309,20 +304,75 @@
 <script type="text/javascript" th:inline="javascript">
 
     $(function(){
-        $('#switch-modal').bootstrapSwitch({
-            onText:"开启",
-            offText:"关闭",
-            onColor:"success",
-            offColor:"danger",
-            size:"small"
-        });
+
     })
 
+    //清空表单
+    function reset() {
+        $("#permForm input[name='pid']").val("");
+        $("#permForm input[name='name']").val("");
+        $("#permForm input[name='url']").val("");
+        $("#permForm input[name='code']").val("");
+
+    }
 
     //显示新增子节点
     function addPerm() {
+
+        // 菜单状态---用于开关组件初始化
+        $(".row_ismenu").each(function() {
+            var ismenu = $(this).val;
+            $(this).bootstrapSwitch({
+                onText:"开启",
+                offText:"禁用",
+                onColor : "success",
+                offColor : "warning",
+                size:"small"
+            }).bootstrapSwitch('state', ismenu);
+        });
+
+
+        // 监听开关状态发生变化时，触发事件
+        $(".row_ismenu").on('switchChange.bootstrapSwitch',function (event,state) {
+
+            var state = state==false?0:1;
+            if(state) {
+                $(this).val(state);
+            } else {
+                $(this).val(state);
+            }
+        });
+
+        // 菜单状态---用于开关组件初始化
+        $(".row_status").each(function() {
+            var ismenu = $(this).val();
+            $(this).bootstrapSwitch({
+                onText:"开启",
+                offText:"禁用",
+                onColor : "success",
+                offColor : "warning",
+                size:"small"
+            }).bootstrapSwitch('state', ismenu);
+        });
+
+
+        // 监听开关状态发生变化时，触发事件
+        $(".row_status").on('switchChange.bootstrapSwitch',function (event,state) {
+
+            var state = state==false?0:1;
+            if(state) {
+                $(this).val(state);
+            } else {
+                $(this).val(state);
+            }
+        })
+
+        reset();
+        getPerm();
         $("#permModal").modal("show");
     }
+
+
 
 
 </script>

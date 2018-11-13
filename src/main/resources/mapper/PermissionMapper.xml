@@ -92,5 +92,13 @@
         id = #{id}
     </update>
 
+    <!--删除资源-->
+    <delete id="deletePermission" parameterType="int">
+        DELETE
+        FROM
+        permission
+        WHERE
+        id = #{id}
+    </delete>
 
 </mapper>
