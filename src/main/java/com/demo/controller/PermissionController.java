@@ -62,7 +62,8 @@ public class PermissionController {
         try {
             permissionService.addPermission(permission);
             logger.info("新增成功!");
-            map.put("code", 200);
+            map.put("code", 201);
+            map.put("msg", "新增成功!");
             map.put("data", permission);
         } catch (Exception e) {
             map.put("msg", "error");
