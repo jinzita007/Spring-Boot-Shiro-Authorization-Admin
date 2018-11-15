@@ -34,5 +34,10 @@ public interface PermissionService {
      */
     public void updateIsmenu(Permission permission);
 
+    /**
+     * 删除资源
+     * @param id
+     */
+    public void delete(Integer id);
 
 }
