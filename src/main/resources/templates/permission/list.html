@@ -12,7 +12,6 @@
 
 </section>
 
-
 <!-- Main content -->
 <section class="content">
     <div class="box">
@@ -25,12 +24,11 @@
         <!-- /.box-header -->
         <div class="box-body">
             <table id="table"></table>
-
-
         </div>
     </div>
 </section>
 
+<!--新增资源弹框-->
 <div class="modal fade" id="permModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -77,14 +75,9 @@
                         </div>
                     </div>
 
-
                     <div class="form-group">
                         <label class="col-sm-3 control-label">状态</label>
                     <div class="col-sm-9 radio">
-                        <!--<label for="row[status]-normal">-->
-                            <!--<input id="row[status]-normal" checked="checked" name="status" type="radio" value="1"> 正常</label>-->
-                        <!--<label for="row[status]-hidden">-->
-                            <!--<input id="row[status]-hidden" name="status" type="radio" value="0"> 隐藏</label>-->
                         <input id="row_status" class="row_status" type="checkbox" name='status' value="1"/>
                     </div>
                     </div>
@@ -100,6 +93,70 @@
     </div>
 </div>
 
+<!--编辑资源弹框-->
+<div class="modal fade" id="permModalEdit" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    资源信息
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form id="permFormEdit" role="form" class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">父节点</label>
+                        <div class="col-sm-9">
+                            <select id="selectbox2" name="pid" disabled="disabled">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="name" class="col-sm-3 control-label">资源名</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" name="name" placeholder="请输入资源名">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="url" class="col-sm-3 control-label">URL</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" name="url" placeholder="请输入url">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="code" class="col-sm-3 control-label">权限代码</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" name="code" placeholder="请输入权限代码">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">菜单</label>
+                        <div class="col-sm-9 radio">
+                            <input id="perm_ismenu" type="checkbox" name='ismenu'/>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">状态</label>
+                        <div class="col-sm-9 radio">
+                            <input id="perm_status" type="checkbox" name='status'/>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="input" class="btn btn-primary" onclick="updatePerm();">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="https://cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
 
@@ -117,16 +174,19 @@
 
 <script type="text/javascript">
 
-
     var $table = $('#table');
     $(function() {
+        initTable();
+    });
+
+    //加载表格数据
+    function initTable() {
         $table.bootstrapTable({
             type: 'GET',
             url: 'permlist',
             height: $(window).height(),
             striped: true,
             sidePagination: 'server',
-            //这里是标志id  和 parentIdField有关系
             idField: 'id',
             columns: [
                 {
@@ -153,8 +213,8 @@
                     title: '菜单',
                     sortable: true,
                     align: 'center',
-                    formatter: function(value, row, index){
-                        return menuSwitch(value,row);
+                    formatter: function (value, row, index) {
+                        return menuSwitch(value, row);
                     }
                 },
                 {
@@ -169,74 +229,101 @@
                     formatter: 'operateFormatter'
                 }
             ],
-            //最主要的就是下面  定义哪一列作为展开项  定义父级标志 这里是pid
-            //定义的列一定是要在表格中展现的  换言之就是上方有这个列 不然报错
+
+            //bootstrap-table-treegrid.js 插件配置
             treeShowField: 'name',
             parentIdField: 'pid',
-            onLoadSuccess: function() {
-                $table.treegrid({
-                    initialState: 'collapsed',
-                    treeColumn: 1,
-                    // expanderExpandedClass: 'glyphicon glyphicon-minus',
-                    // expanderCollapsedClass: 'glyphicon glyphicon-plus',
-                    onChange: function() {
+            onLoadSuccess: function () {
 
+                $table.treegrid({
+                    initialState: 'collapsed',  //所有节点都折叠
+                    //initialState: 'expanded',// 所有节点都展开，默认展开
+                    treeColumn: 1,
+                    onChange: function () {
                         $table.bootstrapTable('resetWidth');
                     }
                 });
-                $(".switch-modal").each(function(){
+
+                //只展开树形的第一级节点
+                // $table.treegrid('getRootNodes').treegrid('expand');
+
+                $(".switch-modal").each(function () {
                     $(this).bootstrapSwitch({
-                        onText:"开启",
-                        offText:"关闭",
-                        onColor:"success",
-                        offColor:"danger",
-                        size:"small"
+                        onText: "开启",
+                        offText: "关闭",
+                        onColor: "success",
+                        offColor: "danger",
+                        size: "small"
                     });
 
-                    $(this).on('switchChange.bootstrapSwitch', function (event,state) {
 
-                        var id = $(this).attr('idValue');
-                        var state = state==false?0:1;
+                    $(this).on('switchChange.bootstrapSwitch', function (event, state) {
 
-                        console.log(id);
-                        console.log(state);
+                        var state = state == false ? 0 : 1;
+
+                        if(state == 0) {
+                            $(this).removeAttr("checked","checked");
+                            $(this).attr("value",0);
+                        } else {
+                            $(this).attr("checked","checked");
+                            $(this).attr("value",1);
+                        }
 
                         $.ajax({
-                            url:"changeIsmenu",
-                            data:{
-                                id:id,
-                                ismenu:state
+                            url: "changeIsmenu",
+                            data: {
+                                id: $(this).attr('idValue'),
+                                ismenu: state
                             },
-                            async:false,
-                            dataType:"json",
-                            type:"POST",
-                            success:function(result){
-                                if(result.code==200){
-                                    $(this).attr('checked','checked');
+                            async: false,
+                            dataType: "json",
+                            type: "POST",
+                            success: function (result) {
+                                if (result.code == 200) {
+
                                     layer.msg("修改成功！");
                                 }
                             },
                             error: function () {
-                                layer.msg("error");
+                                    layer.msg("error");
                             }
                         });
 
 
                     })
-                })
 
+                    // onCheck: function() {
+                    //     var datas = $table.bootstrapTable('getData');
+                    //     // 勾选子类
+                    //     selectChilds(datas,row,"id","pid",true);
+                    //
+                    //     // 勾选父类
+                    //     selectParentChecked(datas,row,"id","pid")
+                    //
+                    //     // 刷新数据
+                    //     $table.bootstrapTable('load', datas);
+                    // },
+                    //
+                    // onUncheck:function(row){
+                    //     var datas = $table.bootstrapTable('getData');
+                    //     selectChilds(datas,row,"id","pid",false);
+                    //     $table.bootstrapTable('load', datas);
+                    // },
 
-            },
+                });
 
+            }
         });
-    });
+    }
+
+
 
     //格式化切换菜单按钮
     function menuSwitch(value,row) {
         if(value==1){
-            return '<input id="switch-modal" class="switch-modal" type="checkbox" name="ismenu" value="'+value+'" idValue="'+row.id+'" checked />';
+            return '<input class="switch-modal menu-value-'+row.id+'" type="checkbox" name="ismenu" value="'+value+'" idValue="'+row.id+'" checked="checked"/>';
         }else if(value == 0){
-            return '<input id="switch-modal" class="switch-modal" type="checkbox" name="ismenu" value="'+value+'" idValue="'+row.id+'" check/>';
+            return '<input class="switch-modal menu-value-'+row.id+'" type="checkbox" name="ismenu" value="'+value+'" idValue="'+row.id+'"/>';
         }
     }
 
@@ -244,14 +331,13 @@
     function operateFormatter(value, row, index) {
         if(row.pid == 0) {
             return [
-                '<button type="button" class="PPermOfadd btn-small btn-primary" style="margin-right:15px;" data-toggle="modal" data-target="#add-permchild-form"><i class="fa fa-plus"></i>&nbsp;新增</button>',
                 '<button type="button" class="PermOfedit btn-small btn-primary" style="margin-right:15px;" data-toggle="modal" data-target="#edit-perm-form"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</button>',
-                '<button type="button" class="PermOfdelete btn-small btn-primary" style="margin-right:15px;"><i class="fa fa-trash-o"></i>&nbsp;删除</button>'
+                '<button type="button" class="PermOfdelete btn-small btn-primary" style="margin-right:15px;" onclick="deletePerm('+row.id+');"><i class="fa fa-trash-o"></i>&nbsp;删除</button>'
             ].join('');
         }
         return [
             '<button type="button" class="PermOfedit btn-small btn-primary" style="margin-right:15px;" data-toggle="modal" data-target="#edit-perm-form"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</button>',
-            '<button type="button" class="PermOfdelete btn-small btn-primary" style="margin-right:-10%;"><i class="fa fa-trash-o"></i>&nbsp;删除</button>'
+            '<button type="button" class="PermOfdelete btn-small btn-primary" style="margin-right:-10%;" onclick="deletePerm('+row.id+');"><i class="fa fa-trash-o"></i>&nbsp;删除</button>'
         ].join('');
 
     }
@@ -278,9 +364,6 @@
         }
     }
 
-
-
-
     //初始化操作按钮的方法
     window.operateEvents = {
         //新增子节点
@@ -290,91 +373,103 @@
         },
         //编辑
         'click .PermOfedit': function (e, value, row, index){
-            showPerme(row);
+            editPerm(row);
         },
 
-        //删除
-        'click .PermOfdelete': function (e, value, row, index) {
-            del(row.id);
-        }
+        // //删除
+        // 'click .PermOfdelete': function (e, value, row, index) {
+        //     del(row.id);
+        // }
 
     };
 
-</script>
-<script type="text/javascript" th:inline="javascript">
+    //编辑权限弹框
+    function editPerm(row) {
+        // var rows = $table.bootstrapTable('getSelections');
+        // console.log(JSON.stringify(rows));
 
-    $(function(){
+        var ismenu = $(".menu-value-"+row.id).val();
+        console.log("菜单状态："+ismenu);
+        console.log("菜单ID："+row.id);
 
-    })
+        $("#selectbox2").val(row.pid);
+        $("#permFormEdit input[name='name']").val(row.name);
+        $("#permFormEdit input[name='url']").val(row.url);
+        $("#permFormEdit input[name='code']").val(row.code);
+        $("#permFormEdit input[name='ismenu']").val(ismenu);
+        $("#permFormEdit input[name='status']").val(row.status);
 
-    //清空表单
-    function reset() {
-        $("#permForm input[name='pid']").val("");
-        $("#permForm input[name='name']").val("");
-        $("#permForm input[name='url']").val("");
-        $("#permForm input[name='code']").val("");
 
-    }
+        // 用于开关组件初始化
+        $("#perm_ismenu").each(function () {
 
-    //显示新增子节点
-    function addPerm() {
-
-        // 菜单状态---用于开关组件初始化
-        $(".row_ismenu").each(function() {
-            var ismenu = $(this).val;
             $(this).bootstrapSwitch({
-                onText:"开启",
-                offText:"禁用",
-                onColor : "success",
-                offColor : "warning",
-                size:"small"
-            }).bootstrapSwitch('state', ismenu);
+                onColor: "success",
+                offColor: "warning",
+                size: "small"
+            })
+            var ismenu = $(this).val();
+            if (ismenu == 0) {
+                $(this).bootstrapSwitch('state', false);
+            } else {
+                $(this).bootstrapSwitch('state', true);
+            }
+
         });
 
 
         // 监听开关状态发生变化时，触发事件
-        $(".row_ismenu").on('switchChange.bootstrapSwitch',function (event,state) {
+        $("#perm_ismenu").on('switchChange.bootstrapSwitch', function (event, state) {
 
-            var state = state==false?0:1;
-            if(state) {
-                $(this).val(state);
+            var state = state == false ? 0 : 1;
+            if (state) {
+                $("#permFormEdit input[name='ismenu']").val(state);
             } else {
-                $(this).val(state);
+                $("#permFormEdit input[name='ismenu']").val(state);
             }
         });
 
-        // 菜单状态---用于开关组件初始化
-        $(".row_status").each(function() {
-            var ismenu = $(this).val();
+        // 状态开关组件初始化
+        $("#perm_status").each(function() {
+
             $(this).bootstrapSwitch({
-                onText:"开启",
-                offText:"禁用",
                 onColor : "success",
                 offColor : "warning",
                 size:"small"
-            }).bootstrapSwitch('state', ismenu);
+            })
+
+            var status = $(this).val();
+            if (status == 0) {
+                $(this).bootstrapSwitch('state', false);
+            } else {
+                $(this).bootstrapSwitch('state', true);
+            }
+
         });
 
 
         // 监听开关状态发生变化时，触发事件
-        $(".row_status").on('switchChange.bootstrapSwitch',function (event,state) {
+        $("#perm_status").on('switchChange.bootstrapSwitch',function (event,state) {
 
-            var state = state==false?0:1;
-            if(state) {
-                $(this).val(state);
+            var state = state == false ? 0 : 1;
+            if (state) {
+                $("#permFormEdit input[name='status']").val(state);
             } else {
-                $(this).val(state);
+                $("#permFormEdit input[name='status']").val(state);
             }
         })
 
-        reset();
-        getPerm();
-        $("#permModal").modal("show");
+
+        $("#permModalEdit").modal("show");
     }
 
 
 
 
+
+
+
 </script>
+
 </body>
 </html>
