@@ -70,4 +70,9 @@ public class PermissionServiceImpl implements PermissionService {
     public void updateIsmenu(Permission permission) {
         permissionMapper.updateIsmenu(permission);
     }
+
+    @Override
+    public void delete(Integer id) {
+        permissionMapper.delete(id);
+    }
 }
