@@ -39,7 +39,7 @@
             </div>
         <!--</div>-->
 
-
+        <!--表格数据-->
         <!-- /.box-header -->
         <div class="box-body">
             <table id="table_list" class="table table-bordered table-striped"></table>
@@ -194,6 +194,7 @@
 <script type="text/javascript" th:inline="javascript">
 
     var $table = $('#table_list');
+    var form = $("#userForm");
 
     $(document).ready(function(){
 
@@ -235,13 +236,24 @@
         $('#search_btn').click(function() {
             $('#table_list').bootstrapTable('refresh', {url: "user_list"});
         })
+        //设置表格内容的高度
+        if($(".fixed-table-body table").height()<$(".fixed-table-container").height()){
+            $(".fixed-table-container").css({"padding-bottom":"0px",height:$(".fixed-table-body table").height()+20});
+            // 是当内容少时，使用搜索功能高度保持不变
+            $('#table_list').bootstrapTable('resetView',{height:"auto"});
+        }else{
+            $(".fixed-table-container").css({height:$(window).height()-160});
+        }
+
+        $( '#table_list' ).bootstrapTable('resetView',{ height: 260 } );
+
 
     });
 
-
+    //加载表格数据
     function initTable() {
         $table.bootstrapTable({
-
+            height:$(window).height()-120,
             method: "GET",                      //请求后台的URL（*）
             contentType: "application/x-www-form-urlencoded",
             url: "user_list",                   //请求方式（*）
@@ -318,9 +330,7 @@
         return temp;
     };
 
-
-
-        //验证数据
+    //验证数据
     function Validator() {
         form.bootstrapValidator({
             message: '输入值不合法',
@@ -379,9 +389,7 @@
 
     }
 
-    var form = $("#userForm");
-
-    //新增用户
+    //新增用户弹框
     function addUser(){
         // 用于开关组件初始化
         $("#user_status").each(function() {
@@ -420,16 +428,13 @@
         $("#userForm input[name='password']").val("");
     }
 
-    //编辑用户
+    //编辑用户弹框
     function editUser(id,username,nickname) {
         $("#userFormEdit #uid").val(id);
         $("#userFormEdit input[name='username']").val(username);
         $("#userFormEdit input[name='nickname']").val(nickname);
         $("#userModalEdit").modal("show");
-
-
     }
-
 
     //新增用户--确认按钮
     function saveUser() {
@@ -511,6 +516,7 @@
 
     }
 
+    //请求查询角色已经构建树形选择
     function getUserRole(json) {
 
         var str = "";
@@ -550,6 +556,7 @@
             }
         })
     }
+
     //请求查询用户角色--用户ID
     function findUserRoleByUserId(callBack) {
         var userId = $('input[name="userId"]').val();
@@ -567,8 +574,6 @@
             }
         })
     }
-
-
 
     //请求新增用户角色关联
     function saveUserRole() {
@@ -591,6 +596,8 @@
                 console.log(data);
                 if(data.code == 200) {
                     layer.msg(data.msg);
+                    $('#table_list').bootstrapTable("refresh");
+                    $("#userRoleModal").modal("hide");
 
                 }
             }
