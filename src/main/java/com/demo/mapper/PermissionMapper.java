@@ -41,4 +41,10 @@ public interface PermissionMapper {
      */
     void updateIsmenu(Permission permission);
 
+    /**
+     * 删除资源
+     * @param id
+     */
+    void delete(Integer id);
+
 }
