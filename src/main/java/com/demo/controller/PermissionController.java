@@ -54,7 +54,12 @@ public class PermissionController {
         return map;
     }
 
-//    @RequiresPermissions("permission:create")
+    /**
+     * 新增资源
+     * @param permission
+     * @return
+     */
+    @RequiresPermissions("permission:create")
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> addPerm(Permission permission) {
@@ -72,6 +77,11 @@ public class PermissionController {
         return map;
     }
 
+    /**
+     * 更改是否菜单
+     * @param permission
+     * @return
+     */
     @RequestMapping(value = "/changeIsmenu", method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> changeIsmenu(Permission permission) {
@@ -88,8 +98,24 @@ public class PermissionController {
         return map;
     }
 
-
-
-
+    /**
+     * 删除资源
+     * @param id
+     * @return
+     */
+    @RequestMapping(value="delete",method =RequestMethod.GET)
+    @ResponseBody
+    public Map<String, Object> delete(Integer id) {
+        Map<String, Object> map = new LinkedHashMap<String, Object>();
+        try {
+            permissionService.delete(id);
+            logger.info("删除成功!");
+            map.put("code", 204);
+            map.put("msg", "删除成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
 
 }
