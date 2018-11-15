@@ -93,7 +93,7 @@
     </update>
 
     <!--删除资源-->
-    <delete id="deletePermission" parameterType="int">
+    <delete id="delete" parameterType="int">
         DELETE
         FROM
         permission
