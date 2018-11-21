@@ -1,10 +1,8 @@
 package com.demo.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.demo.model.Permission;
 import com.demo.model.User;
 import com.demo.service.PermissionService;
-import com.demo.utils.MenuTree;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

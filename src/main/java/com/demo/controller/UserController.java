@@ -22,7 +22,6 @@ import java.util.*;
  * @date 2018/10/28 下午4:17.
  * 用户管理
  */
-@CrossOrigin
 @Controller
 @RequestMapping("/sys/user")
 public class UserController {
