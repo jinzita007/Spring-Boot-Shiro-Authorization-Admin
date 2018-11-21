@@ -107,10 +107,12 @@
             </div>
             <div class="modal-body">
                 <form id="permFormEdit" role="form" class="form-horizontal">
+                    <input type="hidden" name="id"/>
+                    <input type="hidden" name="pid"/>
                     <div class="form-group">
                         <label class="col-sm-3 control-label">父节点</label>
                         <div class="col-sm-9">
-                            <select id="selectbox2" name="pid" disabled="disabled">
+                            <select id="selectbox2" name="pid">
                             </select>
                         </div>
                     </div>
@@ -385,14 +387,14 @@
 
     //编辑权限弹框
     function editPerm(row) {
-        // var rows = $table.bootstrapTable('getSelections');
-        // console.log(JSON.stringify(rows));
 
         var ismenu = $(".menu-value-"+row.id).val();
         console.log("菜单状态："+ismenu);
         console.log("菜单ID："+row.id);
 
-        $("#selectbox2").val(row.pid);
+        // $("#selectbox2").val(row.pid);
+        $("#permFormEdit input[name='id']").val(row.id);
+        $("#permFormEdit input[name='pid']").val(row.pid);
         $("#permFormEdit input[name='name']").val(row.name);
         $("#permFormEdit input[name='url']").val(row.url);
         $("#permFormEdit input[name='code']").val(row.code);
@@ -457,16 +459,12 @@
             } else {
                 $("#permFormEdit input[name='status']").val(state);
             }
-        })
+        });
 
+        getPerm2();
 
         $("#permModalEdit").modal("show");
     }
-
-
-
-
-
 
 
 </script>
