@@ -218,9 +218,9 @@ function geetDeep2(data) {
     console.log("id:" + id);
 
     var str = "";
-    if(pid == 0) {
+
         str += "<option value='0'>≡ 作为一级栏目 ≡</option>";
-    }
+
     (function rec(data, depth, pid) {
 
         var _prefix = (new Array(depth)).join(icon[3]);
@@ -240,15 +240,39 @@ function geetDeep2(data) {
                             str += "<option value='" + pid + "' selected>" + _prefix + icon[1] + data[i].name +
                                 "</option>";
                             console.log(_prefix + icon[1] + data[i].name);
-
-
-
+                            
                         } else {
 
                             str += "<option value='" + pid + "' selected>" + _prefix + icon[2] + data[i].name +
                                 "</option>";
                             console.log(_prefix + icon[2] + data[i].name);
 
+
+                        }
+
+                    }
+
+                }
+            } else {
+                if (data[i].name || '') {
+
+                    if (depth === 0) {
+
+                        str += "<option value='" + pid + "'>" + data[i].name + "</option>";
+                        console.log(data[i].name);
+
+                    } else {
+                        if (i < data.length - 1) {
+
+                            str += "<option value='" + pid + "'>" + _prefix + icon[1] + data[i].name +
+                                "</option>";
+                            console.log(_prefix + icon[1] + data[i].name);
+
+                        } else {
+
+                            str += "<option value='" + pid + "'>" + _prefix + icon[2] + data[i].name +
+                                "</option>";
+                            console.log(_prefix + icon[2] + data[i].name);
 
                         }
 
